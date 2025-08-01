@@ -80,7 +80,7 @@ export const routes = createBrowserRouter([
     ],
   },
   {
-    path: "/logins",
+    path: "/login",
     element: <Login />,
   },
   {
