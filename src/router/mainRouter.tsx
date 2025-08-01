@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useOnboardingStore } from "../global/store";
+// import { useOnboardingStore } from "../global/store";
 import DashboardLayout from "../layouts/dashboardLayout";
 import Login from "@/pages/auth/login/login";
 

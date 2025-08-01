@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useOnboardingStore } from "../global/store";
 import SiderScreen from "../pages/dashboard/common/sideBar";
 import Images from "@/components/images";
-import { Input, Avatar, Typography, Space, Button } from "antd";
+import { Input, Avatar, Typography, Button } from "antd";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import Images from "@/components/images";
 import { Link } from "react-router-dom";
@@ -17,7 +17,6 @@ const Login = () => {
     const navPath = useOnboardingStore();
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
-    const [keepSignedIn, setKeepSignedIn] = React.useState(false);
 
     const onFinish = (values: any) => {
         setLoading(true);
@@ -26,7 +25,6 @@ const Login = () => {
         const data = {
             email: values.email,
             password: values.password,
-            remember: keepSignedIn
         };
 
         login(data)

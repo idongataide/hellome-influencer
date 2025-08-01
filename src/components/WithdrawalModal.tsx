@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Modal, Form, Input, Select, Button } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 
@@ -120,6 +120,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
             <Button
                 type="primary"
                 htmlType="submit"
+                loading={loading}
                 className="h-[43px]! bg-primary px-10! text-end hover:bg-primary-dark text-white font-medium text-base rounded-full!"
             >
                 Proceed

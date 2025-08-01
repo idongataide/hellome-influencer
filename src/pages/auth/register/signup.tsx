@@ -13,7 +13,7 @@ import { setNavData } from "../common/setNavData";
 import { useOnboardingStore } from "@/global/store";
 
 const Signup = () => {
-    const { setNavPath } = useOnboardingStore();
+    // const { setNavPath } = useOnboardingStore();
     const navPath = useOnboardingStore();
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);

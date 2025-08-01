@@ -110,7 +110,7 @@ const data: TransactionData[] = [
 ];
 
 const RecentTransactions: FC = () => {
-  const [withdrawalModalVisible, setWithdrawalModalVisible] = useState(false);
+  const [withdrawalModalVisible, setWithdrawalModalVisible] = React.useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleWithdrawalSubmit = (values: any) => {

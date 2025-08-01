@@ -1,6 +1,5 @@
 import React from 'react';
 import { Input, Button } from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
 import { FaFacebook, FaInstagram, FaTwitter, FaTiktok } from 'react-icons/fa';
 import { LuCopy } from "react-icons/lu";
 
