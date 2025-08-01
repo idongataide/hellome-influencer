@@ -43,7 +43,7 @@ const DashboadScreen: React.FC = () => {
                   <h3 className="text-lg font-normal text-[#667085] mb-2">Available Balance</h3>
                   <p className="text-3xl font-normal text-[#667085]">£ 0.00</p>
                 </div>
-                <WalletOutlined className="text-4xl text-gray-400" />
+                <WalletOutlined className="text-4xl opacity-10 text-gray-400" />
               </div>
             </div>
 
