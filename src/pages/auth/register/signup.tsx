@@ -140,7 +140,7 @@ const Signup = () => {
             </Helmet>
             
             {/* Logo */}
-            <div className="flex justify-center w-full mb-8">
+            <div className="flex justify-center w-full mb-15">
                 <Link to="/login"> 
                       <img src={Images.logo} alt="HelloMe Logo" className="h-12" />
                 </Link>
@@ -153,7 +153,8 @@ const Signup = () => {
                 className="w-full"
                 initialValues={{ remember: true }}
             >
-                {/* Two-column layout for personal details */}
+             <div className="mb-[40px]">
+              <h3 className="text-lg font-[400] mb-2 text-[#036BDD]">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Form.Item
                         label="Full Name"
@@ -215,10 +216,11 @@ const Signup = () => {
                         />
                     </Form.Item>
                 </div>
+                </div>
 
                 {/* Social media handles section */}
-                <div className="mb-4">
-                    <h3 className="text-lg font-medium mb-2 text-[#036BDD]">Social Media Handles</h3>
+                <div className="mb-[40px]">
+                    <h3 className="text-lg font-[400] mb-2 text-[#036BDD]">Social Media Handles</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Form.Item
                             name="instagram"
@@ -285,7 +287,7 @@ const Signup = () => {
 
                 {/* Password section */}
                 <div className="mb-4">
-                    <h3 className="text-lg font-medium mb-2 text-[#036BDD]">Password</h3>
+                    <h3 className="text-lg font-[400] mb-2 text-[#036BDD]">Password</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Form.Item
                         label="Create Password"

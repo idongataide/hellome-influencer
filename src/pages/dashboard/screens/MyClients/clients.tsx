@@ -37,7 +37,7 @@ const CustomerList: FC = () => {
       title: 'S/N',
       dataIndex: 'key',
       key: 'key',
-      render: (text, _record, idx) => <span className="text-[#667085] font-[500]">{(page - 1) * (referrals?.per_page || 10) + idx + 1}</span>,
+      render: (_text, _record, idx) => <span className="text-[#667085] font-[500]">{(page - 1) * (referrals?.per_page || 10) + idx + 1}</span>,
     },
     {
       title: 'Names',

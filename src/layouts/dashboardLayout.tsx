@@ -42,7 +42,7 @@ const DashboardLayout: React.FC = () => {
               
             <div className="col-lg-6">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-lg text-[#475467] mr-10">His {firstName}</span>
+                        <span className="font-semibold text-lg text-[#475467] mr-10">Hi {firstName}</span>
                         <Input
                           placeholder="Looking for something?"
                           prefix={<SearchOutlined className="text-gray-400" />}
