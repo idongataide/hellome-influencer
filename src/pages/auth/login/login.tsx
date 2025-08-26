@@ -7,7 +7,6 @@ import Images from "@/components/images";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { login } from "@/api/authAPI";
-import { ResponseValue } from "@/interfaces/enums";
 import toast, { Toaster } from "react-hot-toast";
 import { setNavData } from "../common/setNavData";
 import { useOnboardingStore } from "@/global/store";
@@ -20,33 +19,39 @@ const Login = () => {
 
     const onFinish = (values: any) => {
         setLoading(true);
-
-        return navigate("/home");
+        
         const data = {
             email: values.email,
             password: values.password,
         };
 
-        login(data)
-            .then((res) => {
-                if (res?.error) {
-                    toast.error(res.message);
+        login(data).then((res) => {
+                if (res?.response?.data?.errors) {
+                    toast.error(res?.response?.data?.message);
                     return;
                 }
-                if (res.status === ResponseValue.SUCCESS) {
-                    toast.success('Login Successful');
-                    setNavData(navPath, values.email, res);
+                if (res.success === true) {
+                toast.success('Login Successful');
+                setNavData(navPath, values.email, res);
 
-                    localStorage.setItem(
-                        "adminToken",
-                        JSON.stringify({
-                            access: res?.data?.token,
-                        }),
-                    );
-                    navigate("/");               
-                }  else {
-                    const x = res?.response?.data?.msg
-                    toast.error(x);
+                localStorage.setItem(
+                    "adminToken",
+                    JSON.stringify({
+                    access: res?.data?.token,
+                    }),
+                );
+                navigate("/");               
+                } else {
+                if (res?.response?.data?.errors) {
+                    Object.values(res.errors as Record<string, string[]>).forEach(errorArray => {
+                    errorArray.forEach(errorMessage => {
+                        toast.error(errorMessage);
+                    });
+                    });
+                } else {
+                    const errorMsg = res?.response?.data?.msg || "An unexpected error occurred";
+                    toast.error(errorMsg);
+                }
                 }
             }).catch((error) => {
                 toast.error(error.message || "An unexpected error occurred");

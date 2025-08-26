@@ -1,16 +1,17 @@
 "use client";
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button, Checkbox, Select } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import Images from "@/components/images";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { login } from "@/api/authAPI";
+import { signup } from "@/api/authAPI";
 import { ResponseValue } from "@/interfaces/enums";
 import toast, { Toaster } from "react-hot-toast";
 import { setNavData } from "../common/setNavData";
 import { useOnboardingStore } from "@/global/store";
+import { useCountries } from "@/hooks/useCountries";
 
 const Signup = () => {
     // const { setNavPath } = useOnboardingStore();
@@ -19,37 +20,109 @@ const Signup = () => {
     const [loading, setLoading] = React.useState(false);
     const [keepSignedIn, setKeepSignedIn] = React.useState(false);
 
+    const { countries, loading: countriesLoading } = useCountries();
+
+    const buildSocialUrls = (values: any): string[] => {
+        const sanitizeHandle = (input?: string) => {
+            if (!input) return "";
+            let handle = String(input).trim();
+            handle = handle.replace(/^https?:\/\//i, "");
+            handle = handle.replace(/^www\./i, "");
+            handle = handle.replace(/^([a-zA-Z]+\.(?:com|net|org|io|co))\//i, "");
+            handle = handle.replace(/^@/, "");
+            return handle;
+        };
+        const pairs: Array<[string, string | undefined]> = [
+            ["facebook.com", values.facebook],
+            ["twitter.com", values.twitter],
+            ["instagram.com", values.instagram],
+            ["tiktok.com", values.tiktok],
+            ["thread.com", values.thread],
+        ];
+        return pairs
+            .map(([domain, handle]) => ({ domain, handle: sanitizeHandle(handle) }))
+            .filter((x) => x.handle)
+            .map((x) => `https://${x.domain}/${x.handle}`);
+    };
+
     const onFinish = (values: any) => {
         setLoading(true);
-        const data = {
+        
+        // Create the payload structure as expected by the API
+        const selected = countries.find((c) => c.iso === values.country);
+        const payload = {
+            first_name: values.fullName?.split(' ')[0] || values.fullName,
+            last_name: values.fullName?.split(' ').slice(1).join(' ') || '',
             email: values.email,
+            country: selected ? { iso: selected.iso, currency: selected.currency } : undefined,
+            phone: values.phone,
             password: values.password,
-            remember: keepSignedIn
+            password_confirmation: values.confirmPassword,
+            social_media_handles: buildSocialUrls(values),
+            audience_size: (values.audienceSite ? String(values.audienceSite) : "0").replace(/\D/g, "")
         };
 
-        login(data)
+        signup(payload)
             .then((res) => {
                 if (res?.error) {
-                    toast.error(res.message);
+                    const handled = (() => {
+                        const data = res?.data || res?.response?.data || res;
+                        const errors = data?.errors;
+                        if (errors && typeof errors === 'object') {
+                            Object.keys(errors).forEach((key) => {
+                                const arr = (errors as any)[key];
+                                if (Array.isArray(arr)) arr.forEach((msg) => toast.error(String(msg)));
+                            });
+                            return true;
+                        }
+                        return false;
+                    })();
+                    if (!handled) toast.error(res.message || "An error occurred");
                     return;
                 }
-                if (res.status === ResponseValue.SUCCESS) {
-                    toast.success('Login Successful');
+                if (res.success === true) {
+                    toast.success('Signup Successful');
                     setNavData(navPath, values.email, res);
-
                     localStorage.setItem(
                         "adminToken",
                         JSON.stringify({
                             access: res?.data?.token,
                         }),
                     );
-                    navigate("/");               
+                    navigate("/review");               
                 }  else {
-                    const x = res?.response?.data?.msg
-                    toast.error(x);
+                    console.log(res);
+                    const data = res?.response?.data || res?.data || res;
+                    const errors = data?.errors;
+                    let shown = false;
+                    if (errors && typeof errors === 'object') {
+                        Object.keys(errors).forEach((key) => {
+                            const arr = (errors as any)[key];
+                            if (Array.isArray(arr)) {
+                                arr.forEach((msg) => toast.error(String(msg)));
+                                shown = true;
+                            }
+                        });
+                    }
+                    if (!shown) {
+                        const x = data?.message || data?.msg;
+                        if (x) toast.error(x); else toast.error("An error occurred");
+                    }
                 }
             }).catch((error) => {
-                toast.error(error.message || "An unexpected error occurred");
+                const data = error?.response?.data || error?.data || error;
+                const errors = data?.errors;
+                let shown = false;
+                if (errors && typeof errors === 'object') {
+                    Object.keys(errors).forEach((key) => {
+                        const arr = (errors as any)[key];
+                        if (Array.isArray(arr)) {
+                            arr.forEach((msg) => toast.error(String(msg)));
+                            shown = true;
+                        }
+                    });
+                }
+                if (!shown) toast.error(data?.message || error?.message || "An unexpected error occurred");
             })
             .finally(() => {
                 setLoading(false);
@@ -57,7 +130,7 @@ const Signup = () => {
     };
 
     return (
-      <div className="flex flex-col min-h-screen bg-[#FFFFFF]  d-flex justify-center items-center">
+      <div className="flex flex-col min-h-screen bg-[#FFFFFF] py-10  d-flex justify-center items-center">
         <div className="flex flex-col items-start w-full max-w-3xl mx-auto py-10 px-10 bg-[#FFFFFF]">
             <Toaster position="top-center" />
             <Helmet>
@@ -100,9 +173,16 @@ const Signup = () => {
                         rules={[{ required: true, message: 'Please select your country!' }]}
                         className="mb-0"
                     >
-                        <Input 
-                            placeholder="United Kingdom" 
-                            className="h-12 border-gray-300 rounded-lg w-full" 
+                        <Select
+                            placeholder="Select your country"
+                            loading={countriesLoading}
+                            options={countries.map((c) => ({ label: `${c.country} (${c.currency})`, value: c.iso }))}
+                            className="h-[43px]! w-full"
+                            showSearch
+                            filterOption={(input, option) => {
+                                const label = typeof option?.label === 'string' ? option.label : '';
+                                return label.toLowerCase().includes(input.toLowerCase());
+                            }}
                         />
                     </Form.Item>
                 </div>
@@ -146,7 +226,7 @@ const Signup = () => {
                         >
                             <div className="flex items-center">
                                 <Input 
-                                    placeholder="username" 
+                                    placeholder="devburna (without @ or URL)" 
                                     className="h-12 border-gray-300 rounded-lg flex-1" 
                                 />
                             </div>
@@ -158,7 +238,7 @@ const Signup = () => {
                         >
                             <div className="flex items-center">
                                 <Input 
-                                    placeholder="username" 
+                                    placeholder="devburna (without @ or URL)" 
                                     className="h-12 border-gray-300 rounded-lg flex-1" 
                                 />
                             </div>
@@ -172,7 +252,7 @@ const Signup = () => {
                         >
                             <div className="flex items-center">
                                 <Input 
-                                    placeholder="username" 
+                                    placeholder="devburna (without @ or URL)" 
                                     className="h-12 border-gray-300 rounded-lg flex-1" 
                                 />
                             </div>
@@ -184,7 +264,7 @@ const Signup = () => {
                         >
                             <div className="flex items-center">
                                 <Input 
-                                    placeholder="username" 
+                                    placeholder="devburna (without @ or URL)" 
                                     className="h-12 border-gray-300 rounded-lg flex-1" 
                                 />
                             </div>
@@ -193,11 +273,11 @@ const Signup = () => {
 
                     <Form.Item
                         name="audienceSite"
-                        label="Enter audience site"
+                        label="Audience Size"
                         className="mt-4"
                     >
                         <Input 
-                            placeholder="Enter your audience site" 
+                            placeholder="Enter your audience size (e.g., 143434)" 
                             className="h-12 border-gray-300 rounded-lg" 
                         />
                     </Form.Item>
@@ -223,7 +303,18 @@ const Signup = () => {
                     <Form.Item
                         label="Confirm password"
                         name="confirmPassword"
-                        rules={[{ required: true, message: 'Please confirm your password!' }]}
+                        dependencies={['password']}
+                        rules={[
+                            { required: true, message: 'Please confirm your password!' },
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    if (!value || getFieldValue('password') === value) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('The two passwords do not match!'));
+                                },
+                            }),
+                        ]}
                         className="mb-0"
                     >
                         <Input.Password

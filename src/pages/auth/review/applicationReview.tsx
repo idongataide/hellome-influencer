@@ -31,9 +31,10 @@ const Success = () => {
                 </div>
                     
                 <div className="text-center ">
-                    <img src={Images.envelope} alt="envelope" className="mx-auto h-42 mb-3" />        
-                    <h2 className="text-2xl font-[500] text-[#195399] mb-2!">Thank you for signing up</h2>
-                    <p className="text-md font-medium text-[#011D40CC]">We would send a verification e-mail to saitoweezy@gmail.com. Kindly click the link in the mail to verify your Hellome Money account.</p>
+                    <img src={Images.review} alt="envelope" className="mx-auto h-42 mb-3" />        
+                    <h2 className="text-2xl font-[500] text-[#195399] mb-2!">Application still under review</h2>
+                    <p className="text-md font-medium text-[#011D40CC]">Your application has been submitted and will be reviewed by our team. 
+                    You will be notified if any extra information is needed.</p>
                 </div>
                 
             </div>

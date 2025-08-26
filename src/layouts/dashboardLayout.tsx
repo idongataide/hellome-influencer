@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
+import { Input, Button, Avatar, Typography } from "antd";
 import { useOnboardingStore } from "../global/store";
 import SiderScreen from "../pages/dashboard/common/sideBar";
-import Images from "@/components/images";
-import { Input, Avatar, Typography, Button } from "antd";
+import Images from "../components/images";
+import { useUser } from "@/hooks/useAdmin";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
@@ -13,7 +14,10 @@ const DashboardLayout: React.FC = () => {
   const [searchValue, setSearchValue] = useState("");
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
   const datas = useOnboardingStore();
+  const { data: user } = useUser();
 
+  // Get user's first name for greeting
+  const firstName = user?.first_name || user?.name?.split(' ')[0] || 'User';
 
   const handleSearch = (value: string) => {
     setSearchValue(value);
@@ -38,7 +42,7 @@ const DashboardLayout: React.FC = () => {
               
             <div className="col-lg-6">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-lg text-[#475467] mr-10">Hi Saito</span>
+                        <span className="font-semibold text-lg text-[#475467] mr-10">His {firstName}</span>
                         <Input
                           placeholder="Looking for something?"
                           prefix={<SearchOutlined className="text-gray-400" />}

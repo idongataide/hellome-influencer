@@ -2,6 +2,8 @@ import { Table, Empty } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { SearchOutlined } from '@ant-design/icons';
 import type { FC } from 'react';
+import React from 'react';
+import { useReferrals } from '@/hooks/useAdmin';
 
 interface CustomerData {
   key: string;
@@ -10,52 +12,32 @@ interface CustomerData {
   dateTime: string;
 }
 
-const data: CustomerData[] = [
-  {
-    key: '1',
-    name: 'Oscar Adetona',
-    type: 'Individual',
-    dateTime: 'Thur, 14/08/24 2:30pm',
-  },
-  {
-    key: '2',
-    name: 'Edgeplus',
-    type: 'Business',
-    dateTime: 'Thur, 14/08/24 2:30pm',
-  },
-  {
-    key: '3',
-    name: 'Aarob Contrusctions',
-    type: 'Business',
-    dateTime: 'Thur, 14/08/24 2:30pm',
-  },
-  {
-    key: '4',
-    name: 'Musa Garki',
-    type: 'Individual',
-    dateTime: 'Thur, 14/08/24 2:30pm',
-  },
-  {
-    key: '5',
-    name: 'Roy Crambell',
-    type: 'Individual',
-    dateTime: 'Thur, 14/08/24 2:30pm',
-  },
-  {
-    key: '6',
-    name: 'Feyl Ayobami',
-    type: 'Business',
-    dateTime: 'Thur, 14/08/24 2:30pm',
-  },
-];
-
 const CustomerList: FC = () => {
+  const [page, setPage] = React.useState(1);
+  const { data: referrals } = useReferrals(page);
+  const rows = referrals?.data || [];
+
+  console.log(referrals,'referralss');
+
+  const mapped: CustomerData[] = rows.map((r: any, index: number) => {
+    const name = r.name || [r.first_name, r.last_name].filter(Boolean).join(' ') || r.email || 'Unknown';
+    const type = (r.type || r.account_type || 'Individual') as 'Individual' | 'Business';
+    const d = new Date(r.created_at || r.createdAt || '');
+    const dateTime = isNaN(d.getTime()) ? (r.created_at || '') : d.toLocaleString('en-GB');
+    return {
+      key: String(r.id || r.uuid || r.reference || `${name}-${index}`),
+      name,
+      type: type === 'Business' ? 'Business' : 'Individual',
+      dateTime,
+    };
+  });
+
   const columns: ColumnsType<CustomerData> = [
     {
       title: 'S/N',
       dataIndex: 'key',
       key: 'key',
-      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
+      render: (text, _record, idx) => <span className="text-[#667085] font-[500]">{(page - 1) * (referrals?.per_page || 10) + idx + 1}</span>,
     },
     {
       title: 'Names',
@@ -108,15 +90,18 @@ const CustomerList: FC = () => {
       <div className="border-[0.6px] bg-[#FFFFFF] rounded-lg mb-3 border-[#EAEAEA]">
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={mapped}
           locale={{ emptyText: customEmpty }}
           size="small"
           className="custom-table text-[14px]"
           pagination={{
-            pageSize: 8,
+            current: page,
+            pageSize: referrals?.per_page || 10,
+            total: referrals?.total || mapped.length,
             showSizeChanger: false,
             showQuickJumper: false,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+            onChange: (p) => setPage(p),
           }}
         />
       </div>

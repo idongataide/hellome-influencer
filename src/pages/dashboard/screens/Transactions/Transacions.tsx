@@ -5,10 +5,12 @@ import { SearchOutlined } from '@ant-design/icons';
 import type { FC } from 'react';
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import WithdrawalModal from '../../../../components/WithdrawalModal';
+import { usePayouts } from '@/hooks/useAdmin';
 
 interface TransactionData {
   key: string;
   dateTime: string;
+  createdAt: string;
   narration: string;
   amount: string;
   balanceAfter: string;
@@ -16,102 +18,32 @@ interface TransactionData {
   type: 'credit' | 'debit';
 }
 
-const data: TransactionData[] = [
-  {
-    key: '1',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Withdrawal',
-    amount: '£50.00',
-    status: 'Success',
-    balanceAfter:'£30.00',
-    type: 'debit',
-  },
-  {
-    key: '2',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    status: 'Success',
-    balanceAfter:'£100.00',
-    type: 'credit',
-  },
-  {
-    key: '3',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Withdrawal',
-    amount: '£20.50',
-    status: 'Success',
-    balanceAfter:'£330.00',
-    type: 'debit',
-  },
-  {
-    key: '4',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    status: 'Success',
-    balanceAfter:'£840.00',
-    type: 'credit',
-  },
-  {
-    key: '5',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    status: 'Success',
-    balanceAfter:'£30.00',
-    type: 'credit',
-  },
-  {
-    key: '7',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    balanceAfter:'£230.00',
-    status: 'Success',
-    type: 'credit',
-  },
-  {
-    key: '8',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Withdrawal',
-    amount: '£20.50',
-    status: 'Success',
-    balanceAfter:'£330.00',
-    type: 'debit',
-  },
-  {
-    key: '9',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    status: 'Success',
-    balanceAfter:'£840.00',
-    type: 'credit',
-  },
-  {
-    key: '10',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    status: 'Success',
-    balanceAfter:'£30.00',
-    type: 'credit',
-  },
-  {
-    key: '11',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    balanceAfter:'£230.00',
-    status: 'Success',
-    type: 'credit',
-  },
-];
-
 const RecentTransactions: FC = () => {
   const [withdrawalModalVisible, setWithdrawalModalVisible] = React.useState(false);
   const [loading, setLoading] = useState(false);
+  const { data: payouts } = usePayouts(1);
+
+  const apiRows = payouts?.data || [];
+
+  const mapped: TransactionData[] = apiRows.map((t: any) => {
+    const createdAt = t.created_at;
+    const date = new Date(createdAt);
+    const dateTime = isNaN(date.getTime()) ? createdAt : date.toLocaleString('en-GB', {
+      weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true
+    });
+    const formatCurrency = (v: string | number) => `£ ${Number(v).toFixed(2)}`;
+
+    return {
+      key: t.reference,
+      createdAt,
+      dateTime,
+      narration: 'Withdrawal',
+      amount: formatCurrency(t.amount),
+      balanceAfter: formatCurrency(t.balance_after),
+      status: t.status?.charAt(0).toUpperCase() + t.status?.slice(1) || 'Success',
+      type: 'debit',
+    };
+  });
 
   const handleWithdrawalSubmit = (values: any) => {
     setLoading(true);
@@ -143,7 +75,7 @@ const RecentTransactions: FC = () => {
           <span className="text-[#667085] font-[500]!">{text}</span>
         </div>
       ),
-      sorter: (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
+      sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },
     {
       title: 'Narration',
@@ -165,9 +97,7 @@ const RecentTransactions: FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status) => (
-        <Tag className="rounded-full px-2 py-1 border-none! font-[500]! text-xs bg-[#ECFDF3]! text-[#1F9854]!">
-          {status}
-        </Tag>
+        <Tag className="rounded-full px-2 py-1 border-none! font-[500]! text-xs bg-[#ECFDF3]! text-[#1F9854]!"><span>{status}</span></Tag>
       ),
     },
   ];
@@ -201,12 +131,12 @@ const RecentTransactions: FC = () => {
       <div className="border-[0.6px] bg-[#FFFFFF] rounded-lg mb-3 border-[#EAEAEA]">
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={mapped}
           locale={{ emptyText: customEmpty }}
           size="small"
           className="custom-table text-[14px]"
           pagination={{
-            pageSize: 8,
+            pageSize: payouts?.per_page || 10,
             showSizeChanger: false,
             showQuickJumper: false,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
@@ -219,7 +149,6 @@ const RecentTransactions: FC = () => {
         onCancel={handleWithdrawalCancel}
         onSubmit={handleWithdrawalSubmit}
         loading={loading}
-        availableBalance="£700.00"
       />
     </div>
   );

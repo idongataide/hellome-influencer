@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table, Avatar } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { useReferrals } from '@/hooks/useAdmin';
 
 interface ClientData {
   key: string;
@@ -10,32 +11,29 @@ interface ClientData {
 }
 
 const MyClients: React.FC = () => {
-  const data: ClientData[] = [
-    {
-      key: '1',
-      name: 'David Bako',
-      initials: 'DB',
-      date: '21/06/2025',
-    },
-    {
-      key: '2',
-      name: 'Niyi Adetoro',
-      initials: 'NA',
-      date: '18/06/2025',
-    },
-    {
-      key: '3',
-      name: 'Adekemi Akintona',
-      initials: 'AA',
-      date: '02/06/2025',
-    },
-    {
-      key: '4',
-      name: 'Niyi Adetoro',
-      initials: 'NA',
-      date: '30/05/2025',
-    },
-  ];
+  const { data: referrals } = useReferrals(1);
+  const rows = referrals?.data || [];
+
+  const computeInitials = (fullName: string) => {
+    const parts = fullName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return 'NA';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso || '';
+    return d.toLocaleDateString('en-GB');
+  };
+
+  const data: ClientData[] = rows.slice(0, 4).map((t: any, idx: number) => {
+    const name = t.name || [t.first_name, t.last_name].filter(Boolean).join(' ') || t.email || 'Unknown';
+    const initials = computeInitials(name);
+    const date = formatDate(t.created_at || t.createdAt || '');
+    const key = String(t.id || t.uuid || t.reference || `${name}-${t.created_at || idx}`);
+    return { key, name, initials, date };
+  });
 
   const columns: ColumnsType<ClientData> = [
     {

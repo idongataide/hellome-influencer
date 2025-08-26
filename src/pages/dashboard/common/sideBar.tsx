@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useOnboardingStore } from "../../../global/store";
 import { AiOutlineLogout } from "react-icons/ai";
@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import Images from "../../../components/images";
 import {FaAngleRight, FaAngleLeft, FaUser, FaUsers } from "react-icons/fa";
+import LogoutConfirmationModal from "../../../components/LogoutConfirmationModal";
 
 const SiderScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ const SiderScreen: React.FC = () => {
   const { siderBarView, setSiderBarView } = useOnboardingStore();
   const data = useOnboardingStore();
   
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+
   const navData = [
     {
       key: "home",
@@ -57,14 +60,15 @@ const SiderScreen: React.FC = () => {
 
   const speedHandling = siderBarView ? 300 : 100;
 
-  const timeDelay = setTimeout(() => {
-    setTimeChange(siderBarView);
+  useEffect(() => {
+    const timeDelay = setTimeout(() => {
+      setTimeChange(siderBarView);
+    }, speedHandling);
 
-    // clear and clean memory
     return () => {
       clearTimeout(timeDelay);
     };
-  }, speedHandling);
+  }, [siderBarView, speedHandling]);
 
   const handleMenuClick = ({ key }: { key: string }) => {
     const selectedItem = navData.find(item => item.key === key);
@@ -80,16 +84,11 @@ const SiderScreen: React.FC = () => {
   };
 
   const handleLogout = () => {
-    useOnboardingStore.persist.clearStorage(); 
-    localStorage.clear(); 
-    sessionStorage.clear(); 
-    useOnboardingStore.setState({ 
-      token: null, 
-      isAuthorized: false, 
-      firstName: "", 
-      lastName: "" 
-    });
-    navigate("/login");
+    setIsLogoutModalVisible(true);
+  };
+
+  const handleCloseLogoutModal = () => {
+    setIsLogoutModalVisible(false);
   };
 
   return (
@@ -171,6 +170,11 @@ const SiderScreen: React.FC = () => {
           </div>
         )}
       </div>
+
+      <LogoutConfirmationModal
+        isVisible={isLogoutModalVisible}
+        onClose={handleCloseLogoutModal}
+      />
     </div>
   );
 };

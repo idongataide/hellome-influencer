@@ -3,10 +3,12 @@ import type { ColumnsType } from 'antd/es/table';
 import { SearchOutlined } from '@ant-design/icons';
 import type { FC } from 'react';
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import { usePayouts } from '@/hooks/useAdmin';
 
 interface TransactionData {
   key: string;
   dateTime: string;
+  createdAt: string;
   narration: string;
   amount: string;
   balanceAfter: string;
@@ -14,64 +16,30 @@ interface TransactionData {
   type: 'credit' | 'debit';
 }
 
-const data: TransactionData[] = [
-  {
-    key: '1',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Withdrawal',
-    amount: '£50.00',
-    status: 'Success',
-    balanceAfter:'£30.00',
-    type: 'debit',
-  },
-  {
-    key: '2',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    status: 'Success',
-    balanceAfter:'£100.00',
-    type: 'credit',
-  },
-  {
-    key: '3',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Withdrawal',
-    amount: '£20.50',
-    status: 'Success',
-    balanceAfter:'£330.00',
-    type: 'debit',
-  },
-  {
-    key: '4',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    status: 'Success',
-    balanceAfter:'£840.00',
-    type: 'credit',
-  },
-  {
-    key: '5',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    status: 'Success',
-    balanceAfter:'£30.00',
-    type: 'credit',
-  },
-  {
-    key: '6',
-    dateTime: 'Thur, 14/08 - 24 2:30pm',
-    narration: 'Referral',
-    amount: '£10.00',
-    balanceAfter:'£230.00',
-    status: 'Success',
-    type: 'credit',
-  },
-];
-
 const RecentTransactions: FC = () => {
+  const { data: payouts } = usePayouts(1);
+  const apiRows = payouts?.data || [];
+
+  const mapped: TransactionData[] = apiRows.slice(0, 5).map((t: any) => {
+    const createdAt = t.created_at;
+    const date = new Date(createdAt);
+    const dateTime = isNaN(date.getTime()) ? createdAt : date.toLocaleString('en-GB', {
+      weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true
+    });
+    const formatCurrency = (v: string | number) => `£ ${Number(v).toFixed(2)}`;
+
+    return {
+      key: t.reference,
+      createdAt,
+      dateTime,
+      narration: 'Withdrawal',
+      amount: formatCurrency(t.amount),
+      balanceAfter: formatCurrency(t.balance_after),
+      status: t.status?.charAt(0).toUpperCase() + t.status?.slice(1) || 'Success',
+      type: 'debit',
+    };
+  });
+
   const columns: ColumnsType<TransactionData> = [
     {
       title: 'Date & Time',
@@ -87,7 +55,7 @@ const RecentTransactions: FC = () => {
           <span className="text-[#667085] font-[500]!">{text}</span>
         </div>
       ),
-      sorter: (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
+      sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },
     {
       title: 'Narration',
@@ -138,7 +106,7 @@ const RecentTransactions: FC = () => {
       <div className="border-[0.6px] bg-[#FFFFFF] rounded-lg mb-3 border-[#EAEAEA]">
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={mapped}
           pagination={false}
           locale={{ emptyText: customEmpty }}
           size="small"

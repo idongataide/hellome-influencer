@@ -2,7 +2,7 @@ import axios from "axios";
 // const URL = import.meta.env.VITE_APP_ENDPOINT;
 
 export const requestClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/admins',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
 });
 
 export const withAuthHeadersHOC =

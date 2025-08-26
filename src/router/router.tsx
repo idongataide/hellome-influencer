@@ -4,6 +4,8 @@ import Login from "../pages/auth/login/login";
 import LoadingScreen from "../pages/dashboard/common/LoadingScreen";
 import MainRouter from "./mainRouter";
 import Signup from "@/pages/auth/register/signup";
+import Success from "@/pages/auth/success/success";
+import Review from "@/pages/auth/review/applicationReview";
 
 const DashboadScreen = lazy(() =>
   import("../pages/dashboard/screens/dashboardScreen/DashboadScreen")
@@ -86,6 +88,14 @@ export const routes = createBrowserRouter([
   {
     path: "/signup",
     element: <Signup />,
+  },
+  {
+    path: "/success",
+    element: <Success />,
+  },
+  {
+    path: "/review",
+    element: <Review />,
   },
   {
     path: "*",

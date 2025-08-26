@@ -1,13 +1,12 @@
 import React from 'react';
-import { Modal, Form, Input, Select, Button } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Modal, Form, Input, Button } from 'antd';
+import { useUser } from '../hooks/useAdmin';
 
 interface WithdrawalModalProps {
   visible: boolean;
   onCancel: () => void;
   onSubmit: (values: any) => void;
   loading?: boolean;
-  availableBalance?: string;
 }
 
 const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
@@ -15,7 +14,6 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
   onCancel,
   onSubmit,
   loading = false,
-  availableBalance = '£700.00'
 }) => {
   const [form] = Form.useForm();
 
@@ -25,17 +23,14 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
     });
   };
 
-  const banks = [
-    { value: 'barclays', label: 'Barclays Bank' },
-    { value: 'hsbc', label: 'HSBC Bank' },
-    { value: 'lloyds', label: 'Lloyds Bank' },
-    { value: 'natwest', label: 'NatWest' },
-    { value: 'santander', label: 'Santander' },
-  ];
+  const { data: user } = useUser();
+
+  // Extract data from user profile
+  const walletBalance = user?.profile?.wallet?.balance || "0.00";
 
   return (
     <Modal
-      title="Withdraw"
+      title={<span className="text-[22px] text-center! font-bold text-[#344054]">Withdraw</span>}
       open={visible}
       onCancel={onCancel}
       footer={null}
@@ -50,7 +45,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
             <span className="text-white text-xs font-bold">🇬🇧</span>
           </div>
           <div>
-            <div className="text-md font-normal text-[#475467]">{availableBalance}</div>
+            <div className="text-md font-normal text-[#475467]">{walletBalance}</div>
             <div className="text-[12px] text-[#98A2B3]">Available Balance</div>
           </div>
         </div>
@@ -62,7 +57,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
         layout="vertical"
         onFinish={handleSubmit}
       >
-        <Form.Item
+        {/* <Form.Item
           label="Select Bank"
           name="bank"
           className="mb-2"
@@ -74,9 +69,9 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
             options={banks}
             className="h-[43px]!"
           />
-        </Form.Item>
+        </Form.Item> */}
 
-        <Form.Item
+        {/* <Form.Item
           label="Recipient Account"
           name="recipientAccount"
           rules={[{ required: true, message: 'Please enter recipient account' }]}
@@ -84,9 +79,9 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
           <Input 
             placeholder="Enter recipient account"
           />
-        </Form.Item>
+        </Form.Item> */}
 
-        <Form.Item
+        {/* <Form.Item
           label="Sort Code"
           name="sortCode"
           rules={[
@@ -95,7 +90,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
           ]}
         >
           <Input placeholder="Enter sort code" />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           label="Amount"

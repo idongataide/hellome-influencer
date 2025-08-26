@@ -209,6 +209,13 @@ input:-internal-autofill-selected {
   background-position: center center;
 }
 
+.bg-image-signup{
+  background-image: url('../images/signup-bg.png');
+  background-size: cover;
+  background-repeat:no-repeat;
+  background-position: center center;
+}
+
 /* Custom Table Styles */
 .custom-table .ant-table-thead > tr > th {
   background-color: #f8fafc !important;
@@ -242,4 +249,8 @@ input:-internal-autofill-selected {
 
 .custom-table .ant-table-thead > tr > th:last-child {
   border-top-right-radius: 8px !important;
+}
+
+.ant-modal-title{
+  text-align: center !important;
 }

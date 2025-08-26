@@ -1,14 +1,38 @@
 import { iLogin } from "@/interfaces/interface";
 
 import { requestClient } from "./baseRequest";
+import { axiosAPIInstance } from "./interceptor";
 
 
 
+export const getUser = async () => {
+  try {
+     return await axiosAPIInstance
+     .get(`/auth`)
+     .then((res) => {
+        return res?.data;
+      });
+  } catch (error) {
+    return error;
+  }
+};
 
 export const login = async (data: iLogin) => {
   try {
      return await requestClient
-     .post(`/auths/login`, data)
+     .post(`/auth/login`, data)
+     .then((res) => {
+        return res?.data;
+      });
+  } catch (error) {
+    return error;
+  }
+};
+
+export const signup = async (data: any) => {
+  try {
+     return await requestClient
+     .post(`/auth/signup`, data)
      .then((res) => {
         return res?.data;
       });

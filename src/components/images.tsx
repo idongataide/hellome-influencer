@@ -5,7 +5,8 @@ const Images = {
     success: "/images/success.png",
     smallLogo: "/images/smallLogo.svg",
     avatar: "/images/Avatar.png",
-
+    envelope: "/images/envelope.png",
+    review: "/images/review.svg",
 
     icon: {
       fav: "/images/icons/fav.svg",
