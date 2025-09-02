@@ -1,16 +1,17 @@
 import React from "react";
-import MyClients from "./MyClients";
 import RecentTransactions from "./RecentTransactions";
 import RefCodeCard from "./RefCodeCard";
-import { UserOutlined, DollarOutlined, WalletOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import { useUser } from "@/hooks/useAdmin";
+import Images from "@/components/images";
+import CurrencyConverterCard from "../converter/converter";
+
 
 const DashboadScreen: React.FC = () => {
   const { data: user } = useUser();
 
   // Extract data from user profile
   const walletBalance = user?.profile?.wallet?.balance || "0.00";
-  const totalEarned = user?.profile?.overview?.total_earned || 0;
   const totalReferrals = user?.profile?.overview?.total_referrals || 0;
 
   return (
@@ -20,8 +21,7 @@ const DashboadScreen: React.FC = () => {
         {/* Left Side - Metrics */}
         <div className="lg:col-span-7 space-y-6 ">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="grid  gap-6">
-            <div className="bg-[#031730] rounded-lg p-6 text-[#F9FAFB]">
+            <div className="bg-[#031730] min-h-[140px] rounded-2xl p-6 text-[#F9FAFB]">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-normal text-[#F9FAFB] mb-2">My Clients</h3>
@@ -30,38 +30,28 @@ const DashboadScreen: React.FC = () => {
                 <UserOutlined className="text-4xl opacity-30" />
               </div>
             </div>
-            <RefCodeCard user={user} />
-          </div>
-
-          <div className="grid  gap-6">   
-
-            <div className="bg-[#E6FAEE] rounded-lg p-6 text-white">
+            <div className="bg-[#F9FAFB] min-h-[140px] rounded-2xl p-6 ">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-normal text-[#667085] mb-2">Commission</h3>
-                  <p className="text-3xl font-normal text-[#667085]">£ {totalEarned.toFixed(2)}</p>
-                </div>
-                <DollarOutlined className="text-4xl opacity-30" />
-              </div>
-            </div>
-
-            <div className="bg-[#F9FAFB] rounded-lg p-6 ">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-normal text-[#667085] mb-2">Available Balance</h3>
+                  <h3 className="text-lg font-normal text-[#667085] mb-2">Wallet</h3>
                   <p className="text-3xl font-normal text-[#667085]">£ {walletBalance}</p>
                 </div>
-                <WalletOutlined className="text-4xl opacity-10 text-gray-400" />
+                <div className="w-10 h-10 overflow-hidden rounded-full">
+                  <img 
+                    src={Images?.icon?.uk} 
+                    className="w-full h-full object-cover" 
+                    alt="uk-logo"
+                  />
+                </div>
               </div>
             </div>
-
-          </div>
          </div>
+          <RefCodeCard user={user} />
         </div>
 
         {/* Right Side - My Clients + Ref Code */}
         <div className="lg:col-span-5 space-y-6">
-          <MyClients />
+            <CurrencyConverterCard/>
         </div>
       </div>
 

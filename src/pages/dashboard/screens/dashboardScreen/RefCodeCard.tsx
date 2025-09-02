@@ -29,10 +29,10 @@ const RefCodeCard: React.FC<RefCodeCardProps> = ({ user }) => {
   const tiktokUrl = socialMediaHandles.find((handle: string) => handle.includes('tiktok.com'));
 
   return (
-    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 text-white relative overflow-hidden">
+    <div className="bg-[#036BDD] rounded-2xl p-6 text-white relative overflow-hidden">
          
       <div className="relative z-10">
-        <h3 className="text-lg font-semibold mb-4">Ref Code</h3>
+        <h3 className="text-lg font-normal mb-4">Ref Code</h3>
         
         <div className="mb-4">
           <Input
@@ -50,27 +50,27 @@ const RefCodeCard: React.FC<RefCodeCardProps> = ({ user }) => {
           />
         </div>
         
-        <div className="w-[40%] ms-auto">
-          <p className="text-sm opacity-90 mb-2">Share your link</p>
+        <div className="flex flex-col items-end ms-auto">
+          <p className="text-sm! opacity-90 !font-[400] mb-2">Share your link</p>
           <div className="flex gap-3">              
               <FaFacebook 
-                className={`cursor-pointer hover:text-[#fff] transition-all ${facebookUrl ? 'text-[#F9FAFB]' : 'text-gray-400'}`} 
-                size={14} 
+                className={`cursor-pointer hover:text-[#fff] transition-all ${facebookUrl ? 'text-[#F9FAFB]' : 'text-white'}`} 
+                size={18} 
                 onClick={() => handleSocialMediaClick(facebookUrl)}
               />      
               <FaInstagram 
-                className={`cursor-pointer hover:text-[#fff] transition-all ${instagramUrl ? 'text-[#F9FAFB]' : 'text-gray-400'}`} 
-                size={14} 
+                className={`cursor-pointer hover:text-[#fff] transition-all ${instagramUrl ? 'text-[#F9FAFB]' : 'text-white'}`} 
+                size={18} 
                 onClick={() => handleSocialMediaClick(instagramUrl)}
               />             
               <FaTwitter 
-                className={`cursor-pointer hover:text-[#fff] transition-all ${twitterUrl ? 'text-[#F9FAFB]' : 'text-gray-400'}`} 
-                size={14} 
+                className={`cursor-pointer hover:text-[#fff] transition-all ${twitterUrl ? 'text-[#F9FAFB]' : 'text-white'}`} 
+                size={18} 
                 onClick={() => handleSocialMediaClick(twitterUrl)}
               />            
               <FaTiktok 
-                className={`cursor-pointer hover:text-[#fff] transition-all ${tiktokUrl ? 'text-[#F9FAFB]' : 'text-gray-400'}`} 
-                size={14} 
+                className={`cursor-pointer hover:text-[#fff] transition-all ${tiktokUrl ? 'text-[#F9FAFB]' : 'text-white'}`} 
+                size={18} 
                 onClick={() => handleSocialMediaClick(tiktokUrl)}
               />  
           </div>

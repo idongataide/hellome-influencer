@@ -54,7 +54,7 @@ const Signup = () => {
             first_name: values.fullName?.split(' ')[0] || values.fullName,
             last_name: values.fullName?.split(' ').slice(1).join(' ') || '',
             email: values.email,
-            country: selected ? { iso: selected.iso, currency: selected.currency } : undefined,
+            country: selected?.iso,
             phone: values.phone,
             password: values.password,
             password_confirmation: values.confirmPassword,

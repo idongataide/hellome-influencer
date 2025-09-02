@@ -254,3 +254,25 @@ input:-internal-autofill-selected {
 .ant-modal-title{
   text-align: center !important;
 }
+.converter .ant-select-selector{
+  background: transparent !important;
+  font-weight: 500;
+  font-size: 20px !important;
+  color: #fff !important;
+}
+
+
+.exchange-line{
+  background: #041D3E;
+  border: 6px solid #fff;
+  width: 70px !important;
+  height: 70px !important;
+  position: absolute;
+  left: 42%;
+  margin-top: -25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* transform: rotate(90deg); */
+  cursor: pointer;
+}

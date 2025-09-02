@@ -37,10 +37,24 @@ export const getReferrals = async (page: number = 1) => {
   }
 };
   
+
 export const get2FA = async () => {
   try {
     return await axiosAPIInstance
       .post(`/security/2fa`)
+      .then((res) => {
+        return res?.data;
+      });
+  } catch (error) {
+    return error;
+  }
+};
+
+// Verify 2FA endpoint
+export const verify2FA = async () => {
+  try {
+    return await axiosAPIInstance
+      .patch(`/security/2fa`)
       .then((res) => {
         return res?.data;
       });

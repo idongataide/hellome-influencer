@@ -10,6 +10,7 @@ const Images = {
 
     icon: {
       fav: "/images/icons/fav.svg",
+      uk: "/images/all-flags/gb.svg",
     },
   };
   

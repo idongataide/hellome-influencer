@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Card, Spin } from "antd";
 import { useUser } from "@/hooks/useAdmin";
-import  { get2FA, updatePassword } from '@/api/customersApi';
+import  { get2FA, updatePassword, verify2FA } from '@/api/customersApi';
 import TwoFAModal from "../../../../components/TwoFAModal";
 import toast from "react-hot-toast";
 
@@ -18,7 +18,7 @@ const ProfilePage: React.FC = () => {
   const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
   const [isMutating, setIsMutating] = useState(false);
 
-  const [passwordForm] = Form.useForm(); // Add form instance for password change
+  const [passwordForm] = Form.useForm();
 
   const onFinish = () => {
     setLoading(true);
@@ -67,11 +67,14 @@ const ProfilePage: React.FC = () => {
 
   const handleCancel2FAModal = () => {
     setIs2faModalVisible(false);
-    setIsMutating(true); // Set loading to true before mutation
-    mutate().finally(() => {
-        setIsMutating(false); // Set loading to false after mutation
-    });
-    setQrCodeSvg(null);
+    setIsMutating(true);
+    verify2FA()
+      .finally(() => {
+        mutate().finally(() => {
+          setIsMutating(false);
+        });
+        setQrCodeSvg(null);
+      });
   };
 
   return (
@@ -148,8 +151,7 @@ const ProfilePage: React.FC = () => {
           </Form>
         </Card>
         
-        {/* Show spinner while checking 2FA status */}
-        {isLoading || isMutating ? ( // Include isMutating in the condition
+        {isLoading || isMutating ? ( 
           <div className="flex justify-center items-center my-4">
             <Spin />
           </div>
