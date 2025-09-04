@@ -51,10 +51,10 @@ export const get2FA = async () => {
 };
 
 // Verify 2FA endpoint
-export const verify2FA = async () => {
+export const verify2FA = async (data: { one_time_password: string }) => {
   try {
     return await axiosAPIInstance
-      .patch(`/security/2fa`)
+      .patch(`/security/2fa`, data)
       .then((res) => {
         return res?.data;
       });

@@ -42,16 +42,9 @@ const Login = () => {
                 );
                 navigate("/");               
                 } else {
-                if (res?.response?.data?.errors) {
-                    Object.values(res.errors as Record<string, string[]>).forEach(errorArray => {
-                    errorArray.forEach(errorMessage => {
-                        toast.error(errorMessage);
-                    });
-                    });
-                } else {
-                    const errorMsg = res?.response?.data?.msg || "An unexpected error occurred";
+                    console.log("Login error response:", res);
+                    const errorMsg = res?.response?.data?.message || "An unexpected error occurred";
                     toast.error(errorMsg);
-                }
                 }
             }).catch((error) => {
                 toast.error(error.message || "An unexpected error occurred");

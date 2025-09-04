@@ -1,7 +1,6 @@
 import { getUser } from "@/api/authAPI";
 import { getCustomers, getPayouts, getReferrals } from "@/api/customersApi";
 
-
 import useSWR from "swr";
 
 export const useAllCustomers = () => {

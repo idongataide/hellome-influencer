@@ -65,16 +65,22 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleCancel2FAModal = () => {
+  const handleCancel2FAModal = (code?: string) => {
     setIs2faModalVisible(false);
     setIsMutating(true);
-    verify2FA()
-      .finally(() => {
-        mutate().finally(() => {
-          setIsMutating(false);
+    if (code && code.length === 6) {
+      const data = { one_time_password: code };
+      verify2FA(data)
+        .finally(() => {
+          mutate().finally(() => {
+            setIsMutating(false);
+          });
+          setQrCodeSvg(null);
         });
-        setQrCodeSvg(null);
-      });
+    } else {
+      setIsMutating(false);
+      setQrCodeSvg(null);
+    }
   };
 
   return (
@@ -182,8 +188,8 @@ const ProfilePage: React.FC = () => {
       <TwoFAModal
         visible={is2faModalVisible}
         onCancel={handleCancel2FAModal}
-        qrCodeSvg={qrCodeSvg}          
-      />  
+        qrCodeSvg={qrCodeSvg}
+      />
     </div>
   );
 };

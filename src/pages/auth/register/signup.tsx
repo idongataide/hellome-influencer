@@ -48,14 +48,12 @@ const Signup = () => {
     const onFinish = (values: any) => {
         setLoading(true);
         
-        // Create the payload structure as expected by the API
         const selected = countries.find((c) => c.iso === values.country);
         const payload = {
             first_name: values.fullName?.split(' ')[0] || values.fullName,
             last_name: values.fullName?.split(' ').slice(1).join(' ') || '',
             email: values.email,
-            country: selected?.iso,
-            phone: values.phone,
+            country: selected ? { iso: selected.iso, currency: selected.currency, country: selected.country } : undefined,            phone: values.phone,
             password: values.password,
             password_confirmation: values.confirmPassword,
             social_media_handles: buildSocialUrls(values),

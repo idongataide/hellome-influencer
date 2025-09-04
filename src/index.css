@@ -167,7 +167,7 @@ input:-internal-autofill-selected {
 }
 
 .ant-select-arrow{
-  color: #667085 !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
@@ -259,6 +259,8 @@ input:-internal-autofill-selected {
   font-weight: 500;
   font-size: 20px !important;
   color: #fff !important;
+  border: none !important;
+
 }
 
 
@@ -275,4 +277,27 @@ input:-internal-autofill-selected {
   align-items: center;
   /* transform: rotate(90deg); */
   cursor: pointer;
+}
+
+.slick-dots {
+    bottom: 10px !important;
+}
+
+.slick-dots li button:before {
+    font-size: 12px !important;    
+    color: #036BDD !important;
+}
+
+.slick-dots li.slick-active button:before {
+    color: #036BDD !important;
+}
+
+.slick-dots li{
+  margin: 0 !important;
+}
+
+.ant-input-number-outlined {
+    background: transparent !important;
+    border: 0 !important;  
+    color: #D4E7FF !important;  
 }
