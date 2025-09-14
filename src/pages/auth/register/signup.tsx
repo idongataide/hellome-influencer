@@ -7,7 +7,6 @@ import Images from "@/components/images";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { signup } from "@/api/authAPI";
-import { ResponseValue } from "@/interfaces/enums";
 import toast, { Toaster } from "react-hot-toast";
 import { setNavData } from "../common/setNavData";
 import { useOnboardingStore } from "@/global/store";
@@ -50,8 +49,8 @@ const Signup = () => {
         
         const selected = countries.find((c) => c.iso === values.country);
         const payload = {
-            first_name: values.fullName?.split(' ')[0] || values.fullName,
-            last_name: values.fullName?.split(' ').slice(1).join(' ') || '',
+            first_name: values.firstName,
+            last_name: values.lastName,
             email: values.email,
             country: selected ? { iso: selected.iso, currency: selected.currency, country: selected.country } : undefined,            phone: values.phone,
             password: values.password,
@@ -155,18 +154,33 @@ const Signup = () => {
               <h3 className="text-lg font-[400] mb-2 text-[#036BDD]">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Form.Item
-                        label="Full Name"
-                        name="fullName"
-                        rules={[{ required: true, message: 'Please input your full name!' }]}
+                        label="First Name"
+                        name="firstName"
+                        rules={[{ required: true, message: 'Please input your first name!' }]}
                         className="mb-0"
                     >
                         <Input 
-                            placeholder="Enter your full name" 
+                            placeholder="Enter your first name" 
+                            className="h-12 border-gray-300 rounded-lg w-full" 
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        label="Last Name"
+                        name="lastName"
+                        rules={[{ required: true, message: 'Please input your last name!' }]}
+                        className="mb-0"
+                    >
+                        <Input 
+                            placeholder="Enter your last name" 
                             className="h-12 border-gray-300 rounded-lg w-full" 
                         />
                     </Form.Item>
 
-                    <Form.Item
+                   
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   <Form.Item
                         label="Country"
                         name="country"
                         rules={[{ required: true, message: 'Please select your country!' }]}
@@ -184,23 +198,7 @@ const Signup = () => {
                             }}
                         />
                     </Form.Item>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[
-                            { required: true, message: 'Please input your email!' },
-                            { type: 'email', message: 'Please enter a valid email!' }
-                        ]}
-                        className="mb-0"
-                    >
-                        <Input 
-                            placeholder="Enter your email" 
-                            className="h-12 border-gray-300 rounded-lg w-full" 
-                        />
-                    </Form.Item>
+                  
 
                     <Form.Item
                         label="Phone Number"
@@ -213,6 +211,24 @@ const Signup = () => {
                             className="h-12 border-gray-300 rounded-lg w-full" 
                         />
                     </Form.Item>
+                    
+                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                        <Form.Item
+                                label="Email"
+                                name="email"
+                                rules={[
+                                    { required: true, message: 'Please input your email!' },
+                                    { type: 'email', message: 'Please enter a valid email!' }
+                                ]}
+                                className="mb-0"
+                            >
+                                <Input 
+                                    placeholder="Enter your email" 
+                                    className="h-12 border-gray-300 rounded-lg w-full" 
+                                />
+                            </Form.Item>
+                    
                 </div>
                 </div>
 

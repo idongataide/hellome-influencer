@@ -1,6 +1,5 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import { Button } from "antd";
 import Images from "../../../components/images";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
@@ -8,9 +7,9 @@ import { Link } from "react-router-dom";
 
 const Success = () => {
     const navigate = useNavigate();
-    const onFinish = () => {
-        navigate("/login");
-    };
+    // const onFinish = () => {
+    //     navigate("/login");
+    // };
 
    
     return (      

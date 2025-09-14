@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 
 const Success = () => {
     const navigate = useNavigate();
-    const onFinish = () => {
-        navigate("/login");
-    };
+    // const onFinish = () => {
+    //     navigate("/login");
+    // };
 
    
     return (      

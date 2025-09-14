@@ -10,6 +10,7 @@ interface TransactionData {
   dateTime: string;
   createdAt: string;
   narration: string;
+  reference: string;
   amount: string;
   balanceAfter: string;
   status: string;
@@ -28,15 +29,16 @@ const RecentTransactions: FC = () => {
     });
     const formatCurrency = (v: string | number) => `£ ${Number(v).toFixed(2)}`;
 
+
     return {
       key: t.reference,
       createdAt,
       dateTime,
-      narration: 'Withdrawal',
+      reference: t.reference,
       amount: formatCurrency(t.amount),
       balanceAfter: formatCurrency(t.balance_after),
-      status: t.status?.charAt(0).toUpperCase() + t.status?.slice(1) || 'Success',
-      type: 'debit',
+      status: t.status,
+      type: t.type,
     };
   });
 
@@ -58,9 +60,9 @@ const RecentTransactions: FC = () => {
       sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },
     {
-      title: 'Narration',
-      dataIndex: 'narration',
-      key: 'narration',
+      title: 'Reference',
+      dataIndex: 'reference',
+      key: 'reference',
     },
     {
       title: 'Amount',
@@ -76,12 +78,30 @@ const RecentTransactions: FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => (
-        <Tag className="rounded-full px-2 py-1 border-none! font-[500]! text-xs bg-[#ECFDF3]! text-[#1F9854]!">
-          {status}
-        </Tag>
-      ),
-    },
+      render: (status) => {
+        let colorClasses = "";
+    
+        console.log(status,'sdsd');
+        switch (status) {
+          case "pending":
+            colorClasses = "!bg-[#FEE2E2] !text-[#B91C1C]";
+            break;
+          case "paid":
+            colorClasses = "!bg-[#ECFDF3] !text-[#1F9854]"; 
+            break;
+          default:
+            colorClasses = "!bg-gray-100 !text-gray-600"; 
+            break;
+        }
+    
+        return (
+          <Tag className={`rounded-full px-2 py-1 !border-none font-[500] text-xs ${colorClasses}`}>
+            <span className="capitalize">{status}</span>
+          </Tag>
+        );
+      },
+    }
+    
   ];
 
   const customEmpty = (

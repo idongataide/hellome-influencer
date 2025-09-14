@@ -301,3 +301,16 @@ input:-internal-autofill-selected {
     border: 0 !important;  
     color: #D4E7FF !important;  
 }
+
+.ant-input-number-input{
+  color: #D4E7FF !important;  
+}
+.ant-modal-content{
+  padding:35px 40px !important ;
+}
+
+.ant-otp-input{
+  font-size: 26px;
+  font-weight: 500;
+  min-height: 55px;
+}

@@ -3,6 +3,8 @@ import { Form, Select, InputNumber, Button } from "antd";
 import { FaArrowDown } from "react-icons/fa";
 import { useUser } from "@/hooks/useAdmin";
 import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
+import { useToast } from "@/global/ToastProvider";
+import { postSwap } from "@/api/swapApi";
 
 const { Option } = Select;
 
@@ -10,10 +12,12 @@ const CurrencyConverterCard = ({}) => {
   const { data: user } = useUser();
   
   // State for form values
-  const [amount, setAmount] = useState<number>(0);
-  const [fromCurrency, setFromCurrency] = useState<string>(user?.wallet?.currency || "EUR");
-  const [toCurrency, setToCurrency] = useState<string>(user?.wallet?.currency || "EUR");
-  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(user?.wallet || null);
+  const [amount, setAmount] = useState<number>(500);
+  const [fromCurrency, setFromCurrency] = useState<string>("EUR"); // Default value
+  const toCurrency = user?.wallet?.currency || "GBP";
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { viewToast } = useToast();
 
   type Wallet = {
     currency: string;
@@ -21,20 +25,27 @@ const CurrencyConverterCard = ({}) => {
     status: string;
   };
 
-  // Use the currency converter hook
-  const { data: convert, isLoading } = useCurrencyConverter(fromCurrency, amount);
+  const { data: convert, isLoading, error } = useCurrencyConverter(fromCurrency, amount);
 
   useEffect(() => {
     if (user?.wallets && Array.isArray(user.wallets)) {
+      const availableCurrencies = (user.wallets as Wallet[])
+        .filter((w: Wallet) => w.currency !== toCurrency)
+        .map(w => w.currency);
+      
+      if (availableCurrencies.length > 0 && !fromCurrency) {
+        setFromCurrency(availableCurrencies[0]);
+      }
       const wallet = (user.wallets as Wallet[]).find((w) => w.currency === fromCurrency);
       setSelectedWallet(wallet || null);
-      
-      // Set the toCurrency to the user's main wallet currency
-      if (user.wallet) {
-        setToCurrency(user.wallet.currency);
-      }
     }
-  }, [fromCurrency, user]);
+    
+    if (error) {
+      setErrorMessage(error?.response?.data?.message);
+    } else {
+      setErrorMessage(null);
+    }
+  }, [fromCurrency, user, toCurrency]);
 
   const handleCurrencyChange = (value: string) => {
     setFromCurrency(value);
@@ -44,9 +55,19 @@ const CurrencyConverterCard = ({}) => {
     setAmount(value || 0);
   };
 
-  // Calculate converted amount
-  const convertedAmount = convert?.convertedAmount || 0;
-  const exchangeRate = convert?.exchangeRate || 1;
+  const handleConvert = async () => {
+    if (!convert?.reference) {
+      viewToast("Conversion reference not found.", "error");
+      return;
+    }
+
+    try {
+      await postSwap(convert.reference);
+      viewToast("Currency swapped successfully!", "success");
+    } catch (err: any) {
+      viewToast(err?.response?.data?.message || "Failed to swap currency.", "error");
+    }
+  };
 
   return (
     <div className="min-h-[340px] relative w-full rounded-3xl p-6 bg-gradient-to-b from-[#036BDD] to-[#05244C]">
@@ -82,7 +103,7 @@ const CurrencyConverterCard = ({}) => {
               >
                 {user?.wallets && Array.isArray(user.wallets) ? (
                   (user.wallets as Wallet[])
-                    .filter((w: Wallet) => w.currency !== user.wallet.currency)
+                    .filter((w: Wallet) => w.currency !== toCurrency) // Filter out the toCurrency
                     .map((w: Wallet) => {
                       const isoCode = w.currency === "EUR" ? "eur" : w.currency.slice(0,2).toLowerCase();
                       return (
@@ -117,14 +138,14 @@ const CurrencyConverterCard = ({}) => {
         </div>
 
         <div className="bg-[#041D3E] mt-5 w-full min-h-[106px] rounded-2xl p-4 flex justify-between items-center">
-          <div>
+        <div>
             <p className="text-md mb-3 font-medium text-[#F2F4F7]">To</p>
             <p className="text-[#D4E7FF] text-[24px] font-normal">
-              {toCurrency} {convertedAmount.toFixed(2)}
+              {convert?.target?.currency} {convert?.target?.amount?.toFixed(2) || "0.00"}
             </p>
-            {amount > 0 && (
+            {amount > 0 && convert?.rate && (
               <p className="text-sm text-[#D4E7FF]">
-                1 {fromCurrency} = {exchangeRate.toFixed(4)} {toCurrency}
+                1 {fromCurrency} = {convert.rate} {toCurrency}
               </p>
             )}
           </div>
@@ -139,11 +160,16 @@ const CurrencyConverterCard = ({}) => {
             </div>           
           </div>
         </div>
-
+        {errorMessage && (
+          <p className="text-red-500 text-sm mt-2">
+            {errorMessage}
+          </p>
+        )}
         {/* Button */}
         <Button 
-          className="w-full bg-[#036BDD] text-white py-3 rounded-xl font-semibold mt-5 hover:bg-[#0259B8] transition disabled:opacity-50"
+          className="w-full bg-[#036BDD]! border-none! text-white! min-h-[48px]! py-3 rounded-xl font-semibold! mt-5 hover:bg-[#0259B8] transition disabled:opacity-50"
           disabled={isLoading || amount <= 0}
+          onClick={handleConvert}
         >
           {isLoading ? "Converting..." : "Convert now"}
         </Button>

@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Form, Input, Button } from 'antd';
 import { useUser } from '../hooks/useAdmin';
 
 interface WithdrawalModalProps {
   visible: boolean;
   onCancel: () => void;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: any, otp: string) => void;
   loading?: boolean;
+ 
 }
 
 const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
@@ -16,114 +17,149 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
   loading = false,
 }) => {
   const [form] = Form.useForm();
-
-  const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      onSubmit(values);
-    });
-  };
+  const [otpForm] = Form.useForm();
+  const [step, setStep] = useState<'withdrawal' | 'otp'>('withdrawal');
+  const [withdrawalData, setWithdrawalData] = useState<any>(null);
 
   const { data: user } = useUser();
 
-  // Extract data from user profile
-  const walletBalance = user?.profile?.wallet?.balance || "0.00";
+  const walletBalance = user?.wallet?.balance || "0.00";
+  const isoCode = user?.wallet?.currency.slice(0,2).toLowerCase();
+
+  const handleWithdrawalSubmit = (values: any) => {
+    setWithdrawalData(values);
+    setStep('otp');
+  };
+
+  const handleOtpSubmit = (values: { otp: string }) => {
+    onSubmit(withdrawalData, values.otp);
+    setStep('withdrawal');
+    otpForm.resetFields();
+    form.resetFields();
+  };
+
+  const handleCancel = () => {
+    setStep('withdrawal');
+    onCancel();
+    form.resetFields();
+    otpForm.resetFields();
+  };
 
   return (
-    <Modal
-      title={<span className="text-[22px] text-center! font-bold text-[#344054]">Withdraw</span>}
-      open={visible}
-      onCancel={onCancel}
-      footer={null}
-      width={500}
-      centered
-      className="withdrawal-modal"
-    >
-      {/* Available Balance Section */}
-      <div className="bg-[#EBF4FF4D] rounded-lg p-4 mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-6 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
-            <span className="text-white text-xs font-bold">🇬🇧</span>
-          </div>
-          <div>
-            <div className="text-md font-normal text-[#475467]">{walletBalance}</div>
-            <div className="text-[12px] text-[#98A2B3]">Available Balance</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Form */}
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
+    <>
+      {/* Withdrawal Modal */}
+      <Modal
+        title={<span className="text-[22px] text-center! font-bold text-[#344054]">Withdraw</span>}
+        open={visible && step === 'withdrawal'}
+        onCancel={handleCancel}
+        footer={null}
+        width={500}
+        centered
+        className="withdrawal-modal"
       >
-        {/* <Form.Item
-          label="Select Bank"
-          name="bank"
-          className="mb-2"
-          rules={[{ required: true, message: 'Please select a bank' }]}
-        >
-          <Select
-            placeholder="Select"
-            suffixIcon={<DownOutlined />}
-            options={banks}
-            className="h-[43px]!"
-          />
-        </Form.Item> */}
+        {/* Available Balance Section */}
+        <div className="bg-[#EBF4FF4D] rounded-lg p-4 mb-6">
+          <div className="flex items-center space-x-3">        
+            <div className="flex items-center space-x-2">
+                <img
+                  src={`images/all-flags/${isoCode}.svg`}
+                  alt={`${isoCode} flag`}
+                  className="h-10 w-10 object-cover rounded-full"
+                />
+                <div>
+                  <div className="text-lg font-normal text-[#475467]">{walletBalance}</div>
+                  <div className="text-[12px] text-[#98A2B3]">Available Balance</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {/* </div> */}
 
-        {/* <Form.Item
-          label="Recipient Account"
-          name="recipientAccount"
-          rules={[{ required: true, message: 'Please enter recipient account' }]}
+        {/* Form */}
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleWithdrawalSubmit}
         >
-          <Input 
-            placeholder="Enter recipient account"
-          />
-        </Form.Item> */}
+          <Form.Item
+            label="Amount"
+            name="amount"
+            rules={[
+              { required: true, message: 'Please enter amount' },
+              { pattern: /^\d+(\.\d{1,2})?$/, message: 'Please enter a valid amount' }
+            ]}
+          >
+            <Input placeholder="Enter amount" />
+          </Form.Item>
 
-        {/* <Form.Item
-          label="Sort Code"
-          name="sortCode"
-          rules={[
-            { required: true, message: 'Please enter sort code' },
-            { pattern: /^\d{2}-\d{2}-\d{2}$/, message: 'Sort code must be in format XX-XX-XX' }
-          ]}
+          <Form.Item
+            label="Narration"
+            name="narration"
+            rules={[{ required: true, message: 'Please enter narration' }]}
+          >
+            <Input placeholder="Enter narration" />
+          </Form.Item>
+
+          <Form.Item className="flex justify-center">
+              <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  className="h-[43px]! bg-primary px-10! text-end hover:bg-primary-dark text-white font-medium text-base rounded-full!"
+              >
+                  Proceed
+              </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* OTP Modal */}
+      <Modal
+        title={<span className="text-[22px] text-center! font-bold text-[#344054]">Enter OTP</span>}
+        open={visible && step === 'otp'}
+        onCancel={handleCancel}
+        footer={null}
+        width={400}
+        centered
+        className="otp-modal"
+      >
+        <div className="mb-6 text-center">
+          <p className="text-[#475467]">Please enter the 6-digit verification code from your authenticator app</p>
+        </div>
+
+        <Form
+          form={otpForm}
+          layout="vertical"
+          onFinish={handleOtpSubmit}
         >
-          <Input placeholder="Enter sort code" />
-        </Form.Item> */}
+          <Form.Item
+            name="otp"
+            rules={[
+              { required: true, message: 'Please enter OTP' },
+              { pattern: /^\d{6}$/, message: 'Please enter a valid 6-digit OTP' }
+            ]}
+          >
+            <Input.OTP 
+              length={6} 
+              formatter={(str) => str.toUpperCase()}
+              className="justify-center"
+            />
+          </Form.Item>
 
-        <Form.Item
-          label="Amount"
-          name="amount"
-          rules={[
-            { required: true, message: 'Please enter amount' },
-            { pattern: /^\d+(\.\d{1,2})?$/, message: 'Please enter a valid amount' }
-          ]}
-        >
-          <Input placeholder="Enter amount" />
-        </Form.Item>
-
-        <Form.Item
-          label="Narration"
-          name="narration"
-          rules={[{ required: true, message: 'Please enter narration' }]}
-        >
-          <Input placeholder="Enter narration" />
-        </Form.Item>
-
-        <Form.Item className="flex justify-center">
+          <Form.Item className="flex justify-center mt-6">
             <Button
                 type="primary"
                 htmlType="submit"
                 loading={loading}
                 className="h-[43px]! bg-primary px-10! text-end hover:bg-primary-dark text-white font-medium text-base rounded-full!"
             >
-                Proceed
+                Verify & Submit
             </Button>
-        </Form.Item>
-      </Form>
-    </Modal>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 };
 
-export default WithdrawalModal; 
+export default WithdrawalModal;

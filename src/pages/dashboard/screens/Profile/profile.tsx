@@ -3,6 +3,7 @@ import { Form, Input, Button, Card, Spin } from "antd";
 import { useUser } from "@/hooks/useAdmin";
 import  { get2FA, updatePassword, verify2FA } from '@/api/customersApi';
 import TwoFAModal from "../../../../components/TwoFAModal";
+import AddBankAccountModal from "../../../../components/AddBankAccountModal";
 import toast from "react-hot-toast";
 
 const ProfilePage: React.FC = () => {
@@ -14,9 +15,13 @@ const ProfilePage: React.FC = () => {
   const phone = user?.profile?.phone || 'N/A';
   const referralCode = user?.profile?.referral_code?.code || 'N/A';
   const [is2faModalVisible, setIs2faModalVisible] = useState(false);
+  const [isAddAccountModalVisible, setIsAddAccountModalVisible] = useState(false); 
   const [loading, setLoading] = useState(false);
   const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
+  const [manualCode, setManualCode] = useState<string>('');
   const [isMutating, setIsMutating] = useState(false);
+  const [twoFAModalMode, setTwoFAModalMode] = useState<'setup' | 'verify'>('setup'); // New state for 2FA modal mode
+  
 
   const [passwordForm] = Form.useForm();
 
@@ -29,7 +34,8 @@ const ProfilePage: React.FC = () => {
                 return;
             }
             if (res.success === true) {
-                setQrCodeSvg(res.data);
+                setQrCodeSvg(res.data.qr);
+                setManualCode(res.data.code);
                 setIs2faModalVisible(true);
             }  else {
                 toast.error(res?.response?.data?.msg || "An unexpected error occurred");
@@ -39,6 +45,7 @@ const ProfilePage: React.FC = () => {
         })
         .finally(() => {
             setLoading(false);
+            setTwoFAModalMode('setup'); // Set mode to setup when opening for 2FA setup
         });
   };
 
@@ -65,22 +72,45 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleCancel2FAModal = (code?: string) => {
+  const handle2FAModalClose = () => {
+    setIs2faModalVisible(false);
+    setQrCodeSvg(null);
+    setManualCode('');
+  };
+
+  const handle2FAVerification = (code?: string) => {
     setIs2faModalVisible(false);
     setIsMutating(true);
     if (code && code.length === 6) {
       const data = { one_time_password: code };
-      verify2FA(data)
+      return verify2FA(data)
+        .then((res) => {
+          if (res?.error) {
+            toast.error(res.message);
+          } else if (res.success === true) {
+            toast.success("2FA enabled successfully!");
+          } else {
+            toast.error(res?.response?.data?.message || "An unexpected error occurred");
+          }
+        })
         .finally(() => {
           mutate().finally(() => {
             setIsMutating(false);
           });
           setQrCodeSvg(null);
+          setManualCode('');
         });
     } else {
       setIsMutating(false);
+      toast.error("2FA verification cancelled or code is invalid.");
       setQrCodeSvg(null);
+      setManualCode('');
     }
+  };
+
+  const handleAddAccount = (values: any) => {
+    console.log('Add Account values:', values);
+    setIsAddAccountModalVisible(false);
   };
 
   return (
@@ -118,7 +148,7 @@ const ProfilePage: React.FC = () => {
             >
               <Input.Password placeholder="Confirm Password" />
             </Form.Item>
-            <Form.Item className="flex justify-end mb-0!">
+            <Form.Item className="flex justify-end mb-0! mt-13!">
                 <Button
                     type="primary"
                     htmlType="submit"
@@ -157,12 +187,40 @@ const ProfilePage: React.FC = () => {
           </Form>
         </Card>
         
+        {user?.bank_account && Object.keys(user.bank_account).length > 0 && (
+          <Card
+            title={<span className="text-lg font-semibold text-[#0B2447]">Account Details</span>}
+            bordered={false}
+            className="shadow-md mt-6!"
+          >
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-gray-600">
+                <span className="text-base font-[500] text-g[#475467]">
+                  {user?.bank_account?.account_name}
+                </span>
+              </p>
+              <div className="flex ">
+                  <p className="text-sm font-medium text-gray-600">
+                    <span className="text-base font-[400] text-[#667085]">
+                      {user?.bank_account?.bank_name}
+                    </span>
+                  </p>
+                  <p className="text-sm font-medium ml-3 text-gray-600">
+                  <span className="text-base font-[400] text-[#667085]">
+                    - {user?.bank_account?.account_number}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
+
+
         {isLoading || isMutating ? ( 
           <div className="flex justify-center items-center my-4">
             <Spin />
           </div>
         ) : (
-          // Only show the button if 2FA is not enabled
           !user?.two_fa_enabled && (
             <Button
               type="primary"
@@ -176,20 +234,39 @@ const ProfilePage: React.FC = () => {
           )
         )}
         
-        <Button
-          type="primary"
-          htmlType="submit"
-          className="h-[48px]! w-full bg-primary text-end hover:bg-primary-dark text-white font-medium text-base rounded-full!"
-        >
-          Add Account
-        </Button>
+        {(!user?.bank_account || Object.keys(user.bank_account).length === 0) && (
+          <Button
+            type="primary"
+            onClick={() => setIsAddAccountModalVisible(true)} 
+            className="h-[48px]! w-full bg-primary text-end hover:bg-primary-dark text-white font-medium text-base rounded-full!"
+          >
+            Add Account
+          </Button>
+        )}
       </div>  
       
-      <TwoFAModal
-        visible={is2faModalVisible}
-        onCancel={handleCancel2FAModal}
-        qrCodeSvg={qrCodeSvg}
-      />
+      {user && !user.two_fa_enabled && (
+        <TwoFAModal
+          visible={is2faModalVisible}
+          onClose={handle2FAModalClose}
+          onVerify={handle2FAVerification} // Use onVerify instead of onCancel
+          onSetupComplete={() => {
+            setIs2faModalVisible(false);
+            mutate();
+          }}
+          qrCodeSvg={qrCodeSvg}
+          manualCode={manualCode}
+          mode={twoFAModalMode}
+        />
+      )}
+      {user && (!user.bank_account || Object.keys(user.bank_account).length === 0) && (
+        <AddBankAccountModal
+          visible={isAddAccountModalVisible}
+          onCancel={() => setIsAddAccountModalVisible(false)}
+          onAddAccount={handleAddAccount}
+          loading={loading}
+        />
+      )}
     </div>
   );
 };

@@ -1,70 +1,115 @@
-import { Table, Empty } from 'antd';
+import { Table, Empty, Avatar } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { SearchOutlined } from '@ant-design/icons';
-import type { FC } from 'react';
-import React from 'react';
 import { useReferrals } from '@/hooks/useAdmin';
+import { useState } from 'react';
 
-interface CustomerData {
+interface ClientData {
   key: string;
   name: string;
-  type: 'Individual' | 'Business';
-  dateTime: string;
+  initials: string;
+  date: string;
+  country: {
+    country: string;
+    iso: string;
+  };
+  earned: string;
 }
 
-const CustomerList: FC = () => {
-  const [page, setPage] = React.useState(1);
-  const { data: referrals } = useReferrals(page);
+const CustomerList: React.FC = () => {
+  const { data: referrals } = useReferrals(1);
   const rows = referrals?.data || [];
+  const [page, setPage] = useState(1);
 
-  console.log(referrals,'referralss');
+  const computeInitials = (fullName: string) => {
+    const parts = fullName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return 'NA';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
 
-  const mapped: CustomerData[] = rows.map((r: any, index: number) => {
-    const name = r.name || [r.first_name, r.last_name].filter(Boolean).join(' ') || r.email || 'Unknown';
-    const type = (r.type || r.account_type || 'Individual') as 'Individual' | 'Business';
-    const d = new Date(r.created_at || r.createdAt || '');
-    const dateTime = isNaN(d.getTime()) ? (r.created_at || '') : d.toLocaleString('en-GB');
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso || '';
+    return d.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const data: ClientData[] = rows.slice(0, 6).map((t: any, idx: number) => {
+    const name =
+      t.name ||
+      [t.first_name, t.last_name].filter(Boolean).join(' ') ||
+      t.email ||
+      'Unknown';
+    const initials = computeInitials(name);
+    const date = formatDate(t.created_at || t.createdAt || '');
+    const key = String(
+      t.id || t.uuid || t.reference || `${name}-${t.created_at || idx}`
+    );
     return {
-      key: String(r.id || r.uuid || r.reference || `${name}-${index}`),
+      key,
       name,
-      type: type === 'Business' ? 'Business' : 'Individual',
-      dateTime,
+      initials,
+      date,
+      country: t.country || { country: 'Unknown', iso: 'xx' },
+      earned: t.earned || '0',
     };
   });
 
-  const columns: ColumnsType<CustomerData> = [
+  const columns: ColumnsType<ClientData> = [
     {
-      title: 'S/N',
-      dataIndex: 'key',
-      key: 'key',
-      render: (_text, _record, idx) => <span className="text-[#667085] font-[500]">{(page - 1) * (referrals?.per_page || 10) + idx + 1}</span>,
-    },
-    {
-      title: 'Names',
+      title: 'Client',
       dataIndex: 'name',
       key: 'name',
-      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      render: (type) => (
-        <span 
-          className={`rounded-full px-2 py-1 border-none font-[500] text-xs ${
-            type === 'Individual' ? 'bg-[#ECFDF3] text-[#1F9854]' : 'bg-[#EEF2F8] text-[#3842A0]'
-          }`}
-        >
-          {type}
-        </span>
+      render: (name, record) => (
+        <div className="flex items-center gap-3">
+          <Avatar
+            style={{
+              backgroundColor: '#031730',
+              color: 'white',
+              fontWeight: 'normal',
+            }}
+          >
+            {record.initials}
+          </Avatar>
+          <span className="font-normal! text-[#475467]">{name}</span>
+        </div>
       ),
     },
     {
-      title: 'Date & Time',
-      dataIndex: 'dateTime',
-      key: 'dateTime',
-      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
-      sorter: (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
+      title: 'Country',
+      dataIndex: 'country',
+      key: 'country',
+      render: (country) => (
+        <div className="flex items-center gap-2">
+          <img
+            src={`images/all-flags/${country.iso.toLowerCase()}.svg`}
+            alt={`${country.country} flag`}
+            className="h-6 w-6 object-cover rounded-full"
+          />
+          <span className="text-gray-700">{country.country}</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      render: (date) => <span className="text-gray-600">{date}</span>,
+    },
+    {
+      title: 'Amount Earned',
+      dataIndex: 'earned',
+      key: 'earned',
+      render: (earned) => (
+        <span className="font-medium text-[#05244C]">{earned}</span>
+      ),
     },
   ];
 
@@ -90,14 +135,14 @@ const CustomerList: FC = () => {
       <div className="border-[0.6px] bg-[#FFFFFF] rounded-lg mb-3 border-[#EAEAEA]">
         <Table
           columns={columns}
-          dataSource={mapped}
+          dataSource={data}
           locale={{ emptyText: customEmpty }}
           size="small"
           className="custom-table text-[14px]"
           pagination={{
             current: page,
             pageSize: referrals?.per_page || 10,
-            total: referrals?.total || mapped.length,
+            total: referrals?.total || data.length,
             showSizeChanger: false,
             showQuickJumper: false,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,

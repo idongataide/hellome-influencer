@@ -3,7 +3,7 @@ import useSWR from "swr";
 
 
 export const useCurrencyConverter = (currency: string, amount: number) => {
-  const { data, isLoading, mutate } = useSWR(
+  const { data, isLoading, error, mutate } = useSWR(
     `/swap?currency=${currency}&amount=${amount}`,
     () => {
       return convertCurrency(currency, amount).then((res) => {
@@ -16,5 +16,5 @@ export const useCurrencyConverter = (currency: string, amount: number) => {
     },
   );
 
-  return { data, isLoading, mutate };
+  return { data, isLoading, error, mutate };
 };

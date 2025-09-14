@@ -14,3 +14,9 @@ export interface iLogin {
 export interface DecodedToken {
   user_uid: string;
 }
+
+export interface Bank {
+  id: string;
+  name: string;
+  code: string;
+}

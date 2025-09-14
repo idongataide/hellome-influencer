@@ -8,6 +8,11 @@ interface ClientData {
   name: string;
   initials: string;
   date: string;
+  country: {
+    country: string;
+    iso: string;
+  };
+  earned: string;
 }
 
 const MyClients: React.FC = () => {
@@ -24,15 +29,35 @@ const MyClients: React.FC = () => {
   const formatDate = (iso: string) => {
     const d = new Date(iso);
     if (isNaN(d.getTime())) return iso || '';
-    return d.toLocaleDateString('en-GB');
+    return d.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
-  const data: ClientData[] = rows.slice(0, 4).map((t: any, idx: number) => {
-    const name = t.name || [t.first_name, t.last_name].filter(Boolean).join(' ') || t.email || 'Unknown';
+  const data: ClientData[] = rows.slice(0, 6).map((t: any, idx: number) => {
+    const name =
+      t.name ||
+      [t.first_name, t.last_name].filter(Boolean).join(' ') ||
+      t.email ||
+      'Unknown';
     const initials = computeInitials(name);
     const date = formatDate(t.created_at || t.createdAt || '');
-    const key = String(t.id || t.uuid || t.reference || `${name}-${t.created_at || idx}`);
-    return { key, name, initials, date };
+    const key = String(
+      t.id || t.uuid || t.reference || `${name}-${t.created_at || idx}`
+    );
+    return {
+      key,
+      name,
+      initials,
+      date,
+      country: t.country || { country: 'Unknown', iso: 'xx' },
+      earned: t.earned || '0',
+    };
   });
 
   const columns: ColumnsType<ClientData> = [
@@ -42,11 +67,11 @@ const MyClients: React.FC = () => {
       key: 'name',
       render: (name, record) => (
         <div className="flex items-center gap-3">
-          <Avatar 
-            style={{ 
+          <Avatar
+            style={{
               backgroundColor: '#031730',
               color: 'white',
-              fontWeight: 'normal'
+              fontWeight: 'normal',
             }}
           >
             {record.initials}
@@ -56,11 +81,32 @@ const MyClients: React.FC = () => {
       ),
     },
     {
+      title: 'Country',
+      dataIndex: 'country',
+      key: 'country',
+      render: (country) => (
+        <div className="flex items-center gap-2">
+          <img
+            src={`images/all-flags/${country.iso.toLowerCase()}.svg`}
+            alt={`${country.country} flag`}
+            className="h-6 w-6 object-cover rounded-full"
+          />
+          <span className="text-gray-700">{country.country}</span>
+        </div>
+      ),
+    },
+    {
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
-      render: (date) => (
-        <span className="text-gray-600">{date}</span>
+      render: (date) => <span className="text-gray-600">{date}</span>,
+    },
+    {
+      title: 'Amount Earned',
+      dataIndex: 'earned',
+      key: 'earned',
+      render: (earned) => (
+        <span className="font-medium text-[#05244C]">{earned}</span>
       ),
     },
   ];
@@ -71,9 +117,9 @@ const MyClients: React.FC = () => {
         <h3 className="text-lg font-normal text-[#05244C]">My Clients</h3>
       </div>
       <div className="p-4 pt-0">
-        <Table 
-          columns={columns} 
-          dataSource={data} 
+        <Table
+          columns={columns}
+          dataSource={data}
           pagination={false}
           size="small"
           className="custom-table border-none! bg-[#F2F4F7]!"
@@ -83,4 +129,4 @@ const MyClients: React.FC = () => {
   );
 };
 
-export default MyClients; 
+export default MyClients;
