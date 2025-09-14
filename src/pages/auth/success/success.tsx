@@ -1,12 +1,14 @@
 "use client";
 import { Helmet } from "react-helmet-async";
 import Images from "../../../components/images";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 const Success = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
+    const location = useLocation();
+    const { email } = location.state || { email: "your email" }; // Default value if email is not passed
     // const onFinish = () => {
     //     navigate("/login");
     // };
@@ -32,7 +34,7 @@ const Success = () => {
                 <div className="text-center ">
                     <img src={Images.envelope} alt="envelope" className="mx-auto h-42 mb-3" />        
                     <h2 className="text-2xl font-[500] text-[#195399] mb-2!">Thank you for signing up</h2>
-                    <p className="text-md font-medium text-[#011D40CC]">We would send a verification e-mail to saitoweezy@gmail.com. Kindly click the link in the mail to verify your Hellome Money account.</p>
+                    <p className="text-md font-medium text-[#011D40CC]">We would send a verification e-mail to <span className="!text-[#036BDD]">{email}</span>. Kindly click the link in the mail to verify your Hellome Money account.</p>
                 </div>
                 
             </div>

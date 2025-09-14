@@ -86,7 +86,9 @@ const Signup = () => {
                             access: res?.data?.token,
                         }),
                     );
-                    navigate("/review");               
+                    navigate("/review"); 
+                    // navigate("/success", { state: { email: values.email } });               
+              
                 }  else {
                     console.log(res);
                     const data = res?.response?.data || res?.data || res;
