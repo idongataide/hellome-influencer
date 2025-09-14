@@ -1,12 +1,12 @@
 "use client";
 import { Helmet } from "react-helmet-async";
 import Images from "../../../components/images";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 const Success = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     // const onFinish = () => {
     //     navigate("/login");
     // };
