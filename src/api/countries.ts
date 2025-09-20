@@ -1,7 +1,7 @@
 import { axiosAPIInstance, handleApiError } from "./interceptor";
 
 export type CountryItem = {
-	country: string;
+	name: string;
 	currency: string;
 	iso: string;
 };

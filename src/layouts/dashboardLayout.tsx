@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Input, Button, Avatar, Typography } from "antd";
+import { Input, Avatar, Typography } from "antd";
 import { useOnboardingStore } from "../global/store";
 import SiderScreen from "../pages/dashboard/common/sideBar";
 import Images from "../components/images";
@@ -17,7 +17,7 @@ const DashboardLayout: React.FC = () => {
   const { data: user } = useUser();
 
   // Get user's first name for greeting
-  const firstName = user?.first_name || user?.name?.split(' ')[0] || 'User';
+  const firstName = user?.profile?.first_name;
 
   const handleSearch = (value: string) => {
     setSearchValue(value);
@@ -25,9 +25,11 @@ const DashboardLayout: React.FC = () => {
     console.log('Searching for:', value);
   };
 
-  const toggleMobileSearch = () => {
-    setIsMobileSearchVisible(!isMobileSearchVisible);
-  };
+  // const toggleMobileSearch = () => {
+  //   setIsMobileSearchVisible(!isMobileSearchVisible);
+  // };
+
+
 
  return (
     <main className="overflow-hidden bg-black">
@@ -38,62 +40,49 @@ const DashboardLayout: React.FC = () => {
 
         <div className="w-full min-h-screen overflow-y-auto">
           <div>
-            <div className={`fixed- py-4 w-full border-b border-[#D0D5DD] mb-6 lg:flex-row- items-center flex-row flex justify-start md:justify-between bg-white px-8`}>             
+            <div className={`fixed- py-4 w-full border-b border-[#D0D5DD] mb-6 lg:flex-row- items-center flex-row flex justify-between bg-white px-8`}>             
               
             <div className="col-lg-6">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-lg text-[#475467] mr-10">Hi {firstName}</span>
-                        <Input
-                          placeholder="Looking for something?"
-                          prefix={<SearchOutlined className="text-gray-400" />}
-                          value={searchValue}
-                          onChange={(e) => setSearchValue(e.target.value)}
-                          onPressEnter={(e) => handleSearch((e.target as HTMLInputElement).value)}
-                          style={{
-                            width: 300,
-                            borderRadius: '40px',
-                            backgroundColor: '#F2F4F7',
-                            border: '1px solid #E0E3E5'
-                          }}
-                          allowClear
-                        />
+                        <div className="hidden md:block">
+                          <Input
+                            placeholder="Looking for something?"
+                            prefix={<SearchOutlined className="text-gray-400" />}
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                            onPressEnter={(e) => handleSearch((e.target as HTMLInputElement).value)}
+                            style={{
+                              width: 300,
+                              borderRadius: '40px',
+                              backgroundColor: '#F2F4F7',
+                              border: '1px solid #E0E3E5'
+                            }}
+                            allowClear
+                          />
+                        </div>
+                     
+
                       </div>
                      </div>
                      <div className="col-lg-6 flex justify-end">
                         <div className="flex items-center ml-auto gap-2">    
                         <Avatar
-                          size={40}
+                          size={35}                          
                           src={datas?.avatar || Images?.avatar}
                           icon={<UserOutlined />}
-                          className="cursor-pointer"
+                          className="cursor-pointer !w-10 !h-10"
                         />
                         
-                        <div className="flex flex-col">
-                          <Text className="text-sm font-semibold text-gray-800">
-                            {datas?.firstName + ' ' + datas?.lastName}
-                          </Text>
+                        <div className="flex flex-col hidden md:block ">                          
                           <Text className="text-xs text-gray-500">
-                            {datas?.email}
+                            {user?.email}
                           </Text>
                         </div>
                       </div>
                    </div>
 
-              {/* Mobile Header */}
-              <div className="md:hidden flex items-center space-x-2">
-                <Button
-                  type="text"
-                  icon={<SearchOutlined />}
-                  onClick={toggleMobileSearch}
-                  className="text-gray-500"
-                />              
-                <Avatar
-                  size={32}
-                  src={datas?.avatar || Images?.avatar}
-                  icon={<UserOutlined />}
-                  className="cursor-pointer"
-                />
-              </div>
+              
             </div>
             <section className="px-6 pt-0">
               <Outlet />

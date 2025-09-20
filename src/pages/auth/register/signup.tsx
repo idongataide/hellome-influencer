@@ -52,7 +52,8 @@ const Signup = () => {
             first_name: values.firstName,
             last_name: values.lastName,
             email: values.email,
-            country: selected ? { iso: selected.iso, currency: selected.currency, country: selected.country } : undefined,            phone: values.phone,
+            country: selected ? { iso: selected.iso, currency: selected?.currency, name: selected?.name } : undefined,    
+            phone: values.phone,
             password: values.password,
             password_confirmation: values.confirmPassword,
             social_media_handles: buildSocialUrls(values),
@@ -191,7 +192,7 @@ const Signup = () => {
                         <Select
                             placeholder="Select your country"
                             loading={countriesLoading}
-                            options={countries.map((c) => ({ label: `${c.country} (${c.currency})`, value: c.iso }))}
+                            options={countries.map((c) => ({ label: `${c.name} (${c.currency})`, value: c.iso }))}
                             className="h-[43px]! w-full"
                             showSearch
                             filterOption={(input, option) => {

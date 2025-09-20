@@ -9,6 +9,7 @@ interface AddBankAccountModalProps {
   visible: boolean;
   onCancel: () => void;
   onAddAccount: (values: any) => void;
+  onSetupComplete?: () => void; 
   loading: boolean;
 }
 

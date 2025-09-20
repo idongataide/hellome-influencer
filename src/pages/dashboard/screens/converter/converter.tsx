@@ -78,7 +78,7 @@ const CurrencyConverterCard = ({}) => {
           <div>
             <p className="text-md mb-3 font-medium text-[#F2F4F7]">From</p>
             <InputNumber
-              className="w-full bg-transparent text-[#D4E7FF] text-[24px] font-normal border-none"
+              className="w-full bg-transparent text-[#D4E7FF] !min-w-[120px] text-[24px] font-normal border-none"
               controls={false}
               value={amount}
               onChange={handleAmountChange}

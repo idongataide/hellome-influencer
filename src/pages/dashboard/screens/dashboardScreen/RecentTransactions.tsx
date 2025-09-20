@@ -21,27 +21,44 @@ const RecentTransactions: FC = () => {
   const { data: payouts } = usePayouts(1);
   const apiRows = payouts?.data || [];
 
+  
+  const currencySymbol = {
+    GBP: '£',
+    NGN: '₦',
+    EUR: '€',
+    DKK: 'kr',
+  };
+
   const mapped: TransactionData[] = apiRows.slice(0, 5).map((t: any) => {
     const createdAt = t.created_at;
     const date = new Date(createdAt);
-    const dateTime = isNaN(date.getTime()) ? createdAt : date.toLocaleString('en-GB', {
-      weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true
-    });
-    const formatCurrency = (v: string | number) => `£ ${Number(v).toFixed(2)}`;
-
-
+    const dateTime = isNaN(date.getTime())
+      ? createdAt
+      : date.toLocaleString("en-GB", {
+          weekday: "short",
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        });
+  
+    const formattedAmount = Number(t.amount).toLocaleString();
+    const formattedBalance = Number(t.balance_after).toLocaleString();
+  
     return {
       key: t.reference,
       createdAt,
       dateTime,
       reference: t.reference,
-      amount: formatCurrency(t.amount),
-      balanceAfter: formatCurrency(t.balance_after),
+      amount: currencySymbol[t.currency as keyof typeof currencySymbol] + " " + formattedAmount,
+      balanceAfter: currencySymbol[t.currency as keyof typeof currencySymbol] + " " + formattedBalance,
       status: t.status,
       type: t.type,
     };
   });
-
+  
   const columns: ColumnsType<TransactionData> = [
     {
       title: 'Date & Time',

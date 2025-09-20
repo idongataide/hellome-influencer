@@ -6,7 +6,7 @@ import { Menu, Avatar } from "antd";
 import { 
   HomeOutlined, 
   CalendarOutlined, 
-  TeamOutlined,
+  // TeamOutlined,
 } from "@ant-design/icons";
 import Images from "../../../components/images";
 import {FaAngleRight, FaAngleLeft, FaUser, FaUsers } from "react-icons/fa";
@@ -39,12 +39,12 @@ const SiderScreen: React.FC = () => {
       label: "Payout",
       URL: "payout",
     },
-    {
-      key: "terms-limits",
-      icon: <TeamOutlined />,
-      label: "Terms & Limits",
-      URL: "terms-limits",
-    },
+    // {
+    //   key: "terms-limits",
+    //   icon: <TeamOutlined />,
+    //   label: "Terms & Limits",
+    //   URL: "terms-limits",
+    // },
     {
       key: "profile",
       icon: <FaUser />,

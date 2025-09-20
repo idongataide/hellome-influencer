@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Card, Spin } from "antd";
+import { Form, Input, Button, Card, Spin, Descriptions } from "antd";
 import { useUser } from "@/hooks/useAdmin";
 import  { get2FA, updatePassword, verify2FA } from '@/api/customersApi';
 import TwoFAModal from "../../../../components/TwoFAModal";
@@ -187,33 +187,43 @@ const ProfilePage: React.FC = () => {
           </Form>
         </Card>
         
+
         {user?.bank_account && Object.keys(user.bank_account).length > 0 && (
           <Card
             title={<span className="text-lg font-semibold text-[#0B2447]">Account Details</span>}
             bordered={false}
             className="shadow-md mt-6!"
           >
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-gray-600">
-                <span className="text-base font-[500] text-g[#475467]">
-                  {user?.bank_account?.account_name}
-                </span>
-              </p>
-              <div className="flex ">
-                  <p className="text-sm font-medium text-gray-600">
-                    <span className="text-base font-[400] text-[#667085]">
-                      {user?.bank_account?.bank_name}
-                    </span>
-                  </p>
-                  <p className="text-sm font-medium ml-3 text-gray-600">
-                  <span className="text-base font-[400] text-[#667085]">
-                    - {user?.bank_account?.account_number}
-                  </span>
-                </p>
-              </div>
-            </div>
+            <Descriptions
+              column={3} // two columns
+              bordered={false}
+              labelStyle={{ fontWeight: 500, color: "#475467" }}
+              contentStyle={{ color: "#667085" }}
+            >
+              <Descriptions.Item label="Account Name">
+                {user?.bank_account?.metadata?.account_name}
+              </Descriptions.Item>
+
+              <Descriptions.Item label="Bank Name">
+                {user?.bank_account?.bank?.name}
+              </Descriptions.Item>
+
+              <Descriptions.Item label="Account Number">
+                {user?.bank_account?.account_number}
+              </Descriptions.Item>
+
+              <Descriptions.Item label="Sort Code">
+                {user?.bank_account?.bank?.sort_code}
+              </Descriptions.Item>
+
+              <Descriptions.Item label="Currency">
+                {user?.bank_account?.currency}
+              </Descriptions.Item>
+            </Descriptions>
           </Card>
         )}
+
+
 
 
         {isLoading || isMutating ? ( 
@@ -263,6 +273,10 @@ const ProfilePage: React.FC = () => {
         <AddBankAccountModal
           visible={isAddAccountModalVisible}
           onCancel={() => setIsAddAccountModalVisible(false)}
+          onSetupComplete={() => {
+            setIsAddAccountModalVisible(false);
+            mutate();
+          }}
           onAddAccount={handleAddAccount}
           loading={loading}
         />

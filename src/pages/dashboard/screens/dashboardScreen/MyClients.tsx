@@ -9,7 +9,7 @@ interface ClientData {
   initials: string;
   date: string;
   country: {
-    country: string;
+    name: string;
     iso: string;
   };
   earned: string;
@@ -55,7 +55,7 @@ const MyClients: React.FC = () => {
       name,
       initials,
       date,
-      country: t.country || { country: 'Unknown', iso: 'xx' },
+      country: t.name || { country: 'Unknown', iso: 'xx' },
       earned: t.earned || '0',
     };
   });
@@ -88,10 +88,10 @@ const MyClients: React.FC = () => {
         <div className="flex items-center gap-2">
           <img
             src={`images/all-flags/${country.iso.toLowerCase()}.svg`}
-            alt={`${country.country} flag`}
+            alt={`${country.name} flag`}
             className="h-6 w-6 object-cover rounded-full"
           />
-          <span className="text-gray-700">{country.country}</span>
+          <span className="text-gray-700">{country.name}</span>
         </div>
       ),
     },
