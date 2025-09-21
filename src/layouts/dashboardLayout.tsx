@@ -12,7 +12,7 @@ const { Text } = Typography;
 const DashboardLayout: React.FC = () => {
   const { siderBarView } = useOnboardingStore(); 
   const [searchValue, setSearchValue] = useState("");
-  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
+  // const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
   const datas = useOnboardingStore();
   const { data: user } = useUser();
 
