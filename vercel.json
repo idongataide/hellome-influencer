@@ -2,13 +2,9 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://resq-admin.onrender.com/api/:path*"
+      "destination": "https://prtest.hellomepay.online/:path*"
     },
-    {
-      "source": "/wallet/:path*",
-      "destination": "https://resq-wallet.onrender.com/wallet/:path*"
-    },
-    {
+   {
       "source": "/(.*)",
       "destination": "/"
     }
