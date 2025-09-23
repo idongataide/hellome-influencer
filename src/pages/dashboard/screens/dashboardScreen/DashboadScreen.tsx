@@ -69,7 +69,10 @@ const DashboadScreen: React.FC = () => {
                         <div>
                           <h3 className="text-lg font-normal text-[#667085] mb-2">Wallet</h3>
                           <p className="text-3xl font-normal text-[#667085]">
-                            {currencySymbol[wallet.currency as keyof typeof currencySymbol] || wallet.currency} {wallet.balance}
+                            {new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: wallet.currency,
+                            }).format(Number(wallet.balance))}
                           </p>
                         </div>
                         <div className="w-10 h-10 overflow-hidden rounded-full">
