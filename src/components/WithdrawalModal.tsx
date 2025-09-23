@@ -23,7 +23,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
 
   const { data: user } = useUser();
 
-  const walletBalance = user?.wallet?.balance || "0.00";
+  // const walletBalance = user?.wallet?.balance || "0.00";
   const isoCode = user?.wallet?.currency.slice(0,2).toLowerCase();
 
   const handleWithdrawalSubmit = (values: any) => {
@@ -67,7 +67,12 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
                   className="h-10 w-10 object-cover rounded-full"
                 />
                 <div>
-                  <div className="text-lg font-normal text-[#475467]">{walletBalance}</div>
+                  <div className="text-lg font-normal text-[#475467]">
+                    {new Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: user.wallet.currency,
+                    }).format(Number(user.wallet.balance))}
+                  </div>
                   <div className="text-[12px] text-[#98A2B3]">Available Balance</div>
                 </div>
               </div>
