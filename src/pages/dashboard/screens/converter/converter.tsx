@@ -27,25 +27,36 @@ const CurrencyConverterCard = ({}) => {
 
   const { data: convert, isLoading, error } = useCurrencyConverter(fromCurrency, amount);
 
-  useEffect(() => {
-    if (user?.wallets && Array.isArray(user.wallets)) {
-      const availableCurrencies = (user.wallets as Wallet[])
-        .filter((w: Wallet) => w.currency !== toCurrency)
-        .map(w => w.currency);
-      
-      if (availableCurrencies.length > 0 && !fromCurrency) {
-        setFromCurrency(availableCurrencies[0]);
-      }
-      const wallet = (user.wallets as Wallet[]).find((w) => w.currency === fromCurrency);
-      setSelectedWallet(wallet || null);
+  console.log(convert,'convert')
+useEffect(() => {
+  if (user?.wallets && Array.isArray(user.wallets) && !fromCurrency) {
+    const availableCurrencies = (user.wallets as Wallet[])
+      .filter((w: Wallet) => w.currency !== toCurrency);
+
+    if (availableCurrencies.length > 0) {
+      setFromCurrency(availableCurrencies[0].currency);
     }
-    
-    if (error) {
-      setErrorMessage(error?.response?.data?.message);
-    } else {
-      setErrorMessage(null);
-    }
-  }, [fromCurrency, user, toCurrency]);
+  }
+}, [user, toCurrency]); 
+
+useEffect(() => {
+  if (user?.wallets && Array.isArray(user.wallets)) {
+    const wallet = (user.wallets as Wallet[]).find(
+      (w) => w.currency === fromCurrency
+    );
+    setSelectedWallet(wallet || null);
+  }
+}, [fromCurrency, user]);
+
+useEffect(() => {
+  if (error) {
+    console.log(error, "verror");
+    setErrorMessage(error?.response?.data?.message);
+  } else {
+    setErrorMessage(null);
+  }
+}, [error]);
+
 
   const handleCurrencyChange = (value: string) => {
     setFromCurrency(value);
@@ -103,7 +114,7 @@ const CurrencyConverterCard = ({}) => {
               >
                 {user?.wallets && Array.isArray(user.wallets) ? (
                   (user.wallets as Wallet[])
-                    .filter((w: Wallet) => w.currency !== toCurrency) // Filter out the toCurrency
+                    .filter((w: Wallet) => w.currency !== toCurrency) 
                     .map((w: Wallet) => {
                       const isoCode = w.currency === "EUR" ? "eur" : w.currency.slice(0,2).toLowerCase();
                       return (
@@ -141,11 +152,11 @@ const CurrencyConverterCard = ({}) => {
         <div>
             <p className="text-md mb-3 font-medium text-[#F2F4F7]">To</p>
             <p className="text-[#D4E7FF] text-[24px] font-normal">
-              {convert?.target?.currency} {convert?.target?.amount?.toFixed(2) || "0.00"}
+              {convert?.data?.target?.currency} {convert?.data?.target?.amount?.toFixed(2) || "0.00"}
             </p>
-            {amount > 0 && convert?.rate && (
+            {amount > 0 && convert?.data?.rate && (
               <p className="text-sm text-[#D4E7FF]">
-                1 {fromCurrency} = {convert.rate} {toCurrency}
+                1 {fromCurrency} = {convert?.data?.rate} {toCurrency}
               </p>
             )}
           </div>
@@ -170,6 +181,7 @@ const CurrencyConverterCard = ({}) => {
           className="w-full bg-[#036BDD]! border-none! text-white! min-h-[48px]! py-3 rounded-xl font-semibold! mt-5 hover:bg-[#0259B8] transition disabled:opacity-50"
           disabled={isLoading || amount <= 0}
           onClick={handleConvert}
+          loading={isLoading}
         >
           {isLoading ? "Converting..." : "Convert now"}
         </Button>
