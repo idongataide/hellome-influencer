@@ -22,7 +22,6 @@ const RefCodeCard: React.FC<RefCodeCardProps> = ({ user }) => {
     }
   };
 
-  // Extract social media URLs
   const facebookUrl = socialMediaHandles.find((handle: string) => handle.includes('facebook.com'));
   const instagramUrl = socialMediaHandles.find((handle: string) => handle.includes('instagram.com'));
   const twitterUrl = socialMediaHandles.find((handle: string) => handle.includes('twitter.com'));
@@ -31,7 +30,7 @@ const RefCodeCard: React.FC<RefCodeCardProps> = ({ user }) => {
   return (
     <div className="bg-[#036BDD] rounded-2xl p-6 text-white relative overflow-hidden">
          
-      <div className="relative z-10">
+      <div className="relative z-10 mt-3">
         <h3 className="text-lg font-normal mb-4">Ref Code</h3>
         
         <div className="mb-4">
