@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Avatar } from 'antd';
+import { Table, Avatar, Spin } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useReferrals } from '@/hooks/useAdmin';
 
@@ -16,7 +16,7 @@ interface ClientData {
 }
 
 const MyClients: React.FC = () => {
-  const { data: referrals } = useReferrals(1);
+  const { data: referrals, isLoading } = useReferrals(1); // 👈 assume hook exposes isLoading
   const rows = referrals?.data || [];
 
   const computeInitials = (fullName: string) => {
@@ -55,7 +55,7 @@ const MyClients: React.FC = () => {
       name,
       initials,
       date,
-      country: t.name || { country: 'Unknown', iso: 'xx' },
+      country: t.country || { name: 'Unknown', iso: 'xx' },
       earned: t.earned || '0',
     };
   });
@@ -112,18 +112,20 @@ const MyClients: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#F2F4F7] rounded-lg ">
+    <div className="bg-[#F2F4F7] rounded-lg">
       <div className="p-4">
         <h3 className="text-lg font-normal text-[#05244C]">My Clients</h3>
       </div>
       <div className="p-4 pt-0">
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={false}
-          size="small"
-          className="custom-table border-none! bg-[#F2F4F7]!"
-        />
+        <Spin spinning={isLoading}>
+          <Table
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+            size="small"
+            className="custom-table border-none! bg-[#F2F4F7]!"
+          />
+        </Spin>
       </div>
     </div>
   );

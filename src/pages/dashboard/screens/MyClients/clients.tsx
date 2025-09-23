@@ -1,4 +1,4 @@
-import { Table, Empty, Avatar } from 'antd';
+import { Table, Empty, Avatar, Spin } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { SearchOutlined } from '@ant-design/icons';
 import { useReferrals } from '@/hooks/useAdmin';
@@ -17,7 +17,7 @@ interface ClientData {
 }
 
 const CustomerList: React.FC = () => {
-  const { data: referrals } = useReferrals(1);
+  const { data: referrals, isLoading } = useReferrals(1);
   const rows = referrals?.data || [];
   const [page, setPage] = useState(1);
 
@@ -64,7 +64,7 @@ const CustomerList: React.FC = () => {
 
   const columns: ColumnsType<ClientData> = [
     {
-      title: 'Client',
+      title: 'Client Name',
       dataIndex: 'name',
       key: 'name',
       render: (name, record) => (
@@ -118,9 +118,9 @@ const CustomerList: React.FC = () => {
       image={<SearchOutlined style={{ fontSize: '48px', color: '#3b82f6' }} />}
       description={
         <div className="text-center">
-          <div className="text-lg font-medium text-gray-900 mb-2">No Customers yet</div>
+          <div className="text-lg font-medium text-gray-900 mb-2">No referee yet</div>
           <div className="text-gray-600">
-            Your customers will appear here once they register
+             Your referee will appear here once they register
           </div>
         </div>
       }
@@ -130,15 +130,17 @@ const CustomerList: React.FC = () => {
   return (
     <div className="">
       <div className="p-4 border bg-[#FFFFFF] rounded-lg mb-3 border-[#EAEAEA]">
-        <h3 className="text-md font-semibold text-[#667085]">Customer List</h3>
+        <h3 className="text-md font-semibold text-[#667085]">My Clients</h3>
       </div>
       <div className="border-[0.6px] bg-[#FFFFFF] rounded-lg mb-3 border-[#EAEAEA]">
+      <Spin spinning={isLoading}>
         <Table
           columns={columns}
           dataSource={data}
           locale={{ emptyText: customEmpty }}
           size="small"
           className="custom-table text-[14px]"
+          // loading={isLoading}
           pagination={{
             current: page,
             pageSize: referrals?.per_page || 10,
@@ -149,6 +151,7 @@ const CustomerList: React.FC = () => {
             onChange: (p) => setPage(p),
           }}
         />
+        </Spin>
       </div>
     </div>
   );
