@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 const ProfilePage: React.FC = () => {
   const { data: user, mutate, isLoading } = useUser(); 
 
-  // Extract user data
   const fullName = user ? `${user.first_name} ${user.last_name}` : 'N/A';
   const email = user?.email || 'N/A';
   const phone = user?.profile?.phone || 'N/A';
@@ -20,7 +19,7 @@ const ProfilePage: React.FC = () => {
   const [qrCodeSvg, setQrCodeSvg] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState<string>('');
   const [isMutating, setIsMutating] = useState(false);
-  const [twoFAModalMode, setTwoFAModalMode] = useState<'setup' | 'verify'>('setup'); // New state for 2FA modal mode
+  const [twoFAModalMode, setTwoFAModalMode] = useState<'setup' | 'verify'>('setup');
   
 
   const [passwordForm] = Form.useForm();
@@ -45,7 +44,7 @@ const ProfilePage: React.FC = () => {
         })
         .finally(() => {
             setLoading(false);
-            setTwoFAModalMode('setup'); // Set mode to setup when opening for 2FA setup
+            setTwoFAModalMode('setup'); 
         });
   };
 
@@ -115,7 +114,6 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="min-h-[500px] flex flex-col lg:flex-row gap-6">
-      {/* Right Section - Change Password */}
       <div className="w-full lg:w-1/3 h-full">
         <Card
           title={<span className="text-lg font-semibold text-[#0B2447]">Change Password</span>}
@@ -152,7 +150,7 @@ const ProfilePage: React.FC = () => {
                 <Button
                     type="primary"
                     htmlType="submit"
-                    loading={loading} // Add loading state to the button
+                    loading={loading} 
                     className="h-[48px]! bg-primary text-end hover:bg-primary-dark text-white font-medium text-base rounded-full!"
                 >
                     Update Password
@@ -259,7 +257,7 @@ const ProfilePage: React.FC = () => {
         <TwoFAModal
           visible={is2faModalVisible}
           onClose={handle2FAModalClose}
-          onVerify={handle2FAVerification} // Use onVerify instead of onCancel
+          onVerify={handle2FAVerification} 
           onSetupComplete={() => {
             setIs2faModalVisible(false);
             mutate();

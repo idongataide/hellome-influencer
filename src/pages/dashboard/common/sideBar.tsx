@@ -12,10 +12,14 @@ import Images from "../../../components/images";
 import {FaAngleRight, FaAngleLeft, FaUser, FaUsers } from "react-icons/fa";
 import LogoutConfirmationModal from "../../../components/LogoutConfirmationModal";
 
-const SiderScreen: React.FC = () => {
+interface SiderScreenProps {
+  isMobileMenuOpen: boolean;
+  toggleMobileMenu: () => void;
+}
+
+const SiderScreen: React.FC<SiderScreenProps> = ({ isMobileMenuOpen, toggleMobileMenu }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { siderBarView, setSiderBarView } = useOnboardingStore();
   const data = useOnboardingStore();
   
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
@@ -58,17 +62,17 @@ const SiderScreen: React.FC = () => {
   
   const [timeChange, setTimeChange] = useState<boolean>(false);
 
-  const speedHandling = siderBarView ? 300 : 100;
+  const speedHandling = isMobileMenuOpen ? 300 : 100;
 
   useEffect(() => {
     const timeDelay = setTimeout(() => {
-      setTimeChange(siderBarView);
+      setTimeChange(isMobileMenuOpen);
     }, speedHandling);
 
     return () => {
       clearTimeout(timeDelay);
     };
-  }, [siderBarView, speedHandling]);
+  }, [isMobileMenuOpen, speedHandling]);
 
   const handleMenuClick = ({ key }: { key: string }) => {
     const selectedItem = navData.find(item => item.key === key);
@@ -92,21 +96,21 @@ const SiderScreen: React.FC = () => {
   };
 
   return (
-    <div className=" relative h-full  bg-[#031730] flex flex-col">
-      <div
+    <div  className=" relative h-full  bg-[#031730] flex flex-col">
+      <div 
         className="absolute right-0 top-7 cursor-pointer text-[#000] bg-white rounded-full p-1 border shadow-md"
         onClick={() => {
-          setSiderBarView(!siderBarView);
+          toggleMobileMenu();
         }}
       >
-        {siderBarView ? <FaAngleLeft /> : <FaAngleRight />}
+        {isMobileMenuOpen ? <FaAngleLeft /> : <FaAngleRight />}
       </div>
       
       <Link to="/">
         <main className="mt-[20px] w-full flex justify-start transition-all duration-500 ml-5 overflow-hidden">
           <img src={Images?.smallLogo} className="h-[40px] black md:hidden" />
           <div>
-            {siderBarView ? (
+            {isMobileMenuOpen ? (
               <img src={Images?.logo} className="h-[40px] hidden md:block" />
             ) : (
               <img
@@ -132,7 +136,7 @@ const SiderScreen: React.FC = () => {
           items={navData.map(item => ({
             key: item.key,
             icon: item.icon,
-            label: siderBarView ? item.label : null,
+            label: isMobileMenuOpen ? item.label : null,
           }))}
           className="ant-menu-custom"
         />
@@ -151,7 +155,7 @@ const SiderScreen: React.FC = () => {
         </Link>
 
         {timeChange && (
-          <div className="hidden flex-1 md:flex justify-between items-center">
+          <div className="hidden- flex-1 md:flex justify-between items-center">
             <Link to="/account">
               <div>
                 <p className="text-[#fff]! font-semibold transition-all capitalize duration-500">

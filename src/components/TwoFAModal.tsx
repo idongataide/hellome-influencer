@@ -14,7 +14,7 @@ export interface TwoFAModalProps {
 
 const TwoFAModal: React.FC<TwoFAModalProps> = ({
     visible,
-    onVerify, // Use onVerify instead of onCancel
+    onVerify, 
     onClose,
     qrCodeSvg,
     manualCode,
@@ -87,7 +87,7 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({
                             type="primary"
                             htmlType="submit"
                             disabled={code.length !== 6}
-                            loading={loading} // Add loading prop here
+                            loading={loading} 
                             className="h-[48px]! w-full bg-primary text-end hover:bg-primary-dark text-white font-medium text-[16px]! rounded-full! mt-4"
                         >
                             Complete 2-step verification

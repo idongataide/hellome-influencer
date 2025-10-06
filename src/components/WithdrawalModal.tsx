@@ -57,7 +57,6 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
         centered
         className="withdrawal-modal"
       >
-        {/* Available Balance Section */}
         <div className="bg-[#EBF4FF4D] rounded-lg p-4 mb-6">
           <div className="flex items-center space-x-3">        
             <div className="flex items-center space-x-2">

@@ -13,32 +13,29 @@ const { Text } = Typography;
 const DashboardLayout: React.FC = () => {
   const { siderBarView, setSiderBarView } = useOnboardingStore(); 
   const [searchValue, setSearchValue] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu visibility
-  // const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
-  const datas = useOnboardingStore();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: user } = useUser();
 
-  // Get user's first name for greeting
   const firstName = user?.profile?.first_name;
 
   const handleSearch = (value: string) => {
     setSearchValue(value);
-    // Add your search logic here
     console.log('Searching for:', value);
   };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-    setSiderBarView(!siderBarView); // Also toggle the sidebar view
+    setSiderBarView(!siderBarView); 
   };
 
 
+  console.log(siderBarView, "siderBarView");
 
  return (
     <main className="overflow-hidden bg-black">
       <div className="flex w-full h-screen bg-white">
-        <div style={{ width: siderBarView ? '300px' : '80px', transition: 'width 0.3s ease' }} className="hidden md:block">
-          <SiderScreen />
+        <div style={{ width: isMobileMenuOpen ? '300px' : '80px', transition: 'width 0.3s ease' }} className="hidden md:block">
+          <SiderScreen isMobileMenuOpen={isMobileMenuOpen} toggleMobileMenu={toggleMobileMenu} />
         </div>
 
         <div className="w-full min-h-screen overflow-y-auto">
@@ -66,7 +63,7 @@ const DashboardLayout: React.FC = () => {
                         </div>
                      
                         <MenuOutlined
-                          className="text-2xl cursor-pointer md:hidden"
+                          className="text-2xl cursor-pointer hidden md:hidden!"
                           onClick={toggleMobileMenu}
                         />
                       </div>
@@ -75,7 +72,7 @@ const DashboardLayout: React.FC = () => {
                         <div className="flex items-center ml-auto gap-2">    
                         <Avatar
                           size={35}                          
-                          src={datas?.avatar || Images?.avatar}
+                          src={user?.avatar || Images?.avatar}
                           icon={<UserOutlined />}
                           className="cursor-pointer !w-10 !h-10"
                         />
@@ -98,23 +95,22 @@ const DashboardLayout: React.FC = () => {
 
         {isMobileMenuOpen && (
           <div
-            className="fixed inset-0 bg-opacity-50 z-40 md:hidden"
+            className="fixed top-0 right-0 w-[calc(100%-300px)] h-full bg-opacity-50 z-40 md:hidden"
             onClick={toggleMobileMenu}
           ></div>
         )}
 
-        <div
-          style={{
-            width: isMobileMenuOpen ? '300px' : '0px',
-            transition: 'width 0.3s ease-in-out',
-            overflowX: 'hidden',
-          }}
-          className="fixed top-0 left-0 h-full bg-[#031730] z-50 md:hidden"
-        >
-          <SiderScreen />
+          <div
+            style={{
+              width: isMobileMenuOpen && siderBarView ? '300px' : '0px',
+              transition: 'width 0.3s ease-in-out',
+              overflowX: 'hidden',
+            }}
+            className="fixed top-0 left-0 h-full bg-[#031730] z-50 md:hidden"
+          >
+            <SiderScreen isMobileMenuOpen={isMobileMenuOpen} toggleMobileMenu={toggleMobileMenu} />
+          </div>
         </div>
-        </div>
-    
     </main>
   );
 };
