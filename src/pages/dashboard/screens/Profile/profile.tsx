@@ -190,11 +190,11 @@ const ProfilePage: React.FC = () => {
           <Card
             title={<span className="text-lg font-semibold text-[#0B2447]">Account Details</span>}
             bordered={false}
-            className="shadow-md mt-6!"
+            className="shadow-md mt-6"
           >
             <Descriptions
-              column={3} // two columns
               bordered={false}
+              column={{ xs: 1, sm: 1, md: 2, lg: 3 }}
               labelStyle={{ fontWeight: 500, color: "#475467" }}
               contentStyle={{ color: "#667085" }}
             >
@@ -220,6 +220,7 @@ const ProfilePage: React.FC = () => {
             </Descriptions>
           </Card>
         )}
+
 
 
 

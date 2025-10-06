@@ -146,7 +146,7 @@ const SiderScreen: React.FC<SiderScreenProps> = ({ isMobileMenuOpen, toggleMobil
       <div
         className={`${timeChange ? "px-3 items-start" : "px-7 "} py-8 cursor-pointer flex gap-3 w-full transition-all duration-500 border-t-1 border-gray-300`}      
       >
-        <Link to="/account">
+        <Link to="/profile">
           <Avatar
             size={40}
             src={data?.avatar || Images?.avatar}
@@ -156,7 +156,7 @@ const SiderScreen: React.FC<SiderScreenProps> = ({ isMobileMenuOpen, toggleMobil
 
         {timeChange && (
           <div className="hidden- flex-1 md:flex justify-between items-center">
-            <Link to="/account">
+            <Link to="/profile">
               <div>
                 <p className="text-[#fff]! font-semibold transition-all capitalize duration-500">
                   {data?.firstName ? data?.firstName + ' ' + data?.lastName : 'Admin'}

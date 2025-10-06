@@ -25,11 +25,10 @@ const DashboardLayout: React.FC = () => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-    setSiderBarView(!siderBarView); 
+    setSiderBarView(!isMobileMenuOpen); 
   };
 
 
-  console.log(siderBarView, "siderBarView");
 
  return (
     <main className="overflow-hidden bg-black">
@@ -63,7 +62,7 @@ const DashboardLayout: React.FC = () => {
                         </div>
                      
                         <MenuOutlined
-                          className="text-2xl cursor-pointer hidden md:hidden!"
+                          className="text-2xl cursor-pointer md:hidden"
                           onClick={toggleMobileMenu}
                         />
                       </div>
