@@ -94,7 +94,7 @@ const SiderScreen: React.FC = () => {
   return (
     <div className=" relative h-full  bg-[#031730] flex flex-col">
       <div
-        className="absolute -right-3 top-7 cursor-pointer text-[#000] bg-white rounded-full p-1 border shadow-md hidden md:block"
+        className="absolute right-0 top-7 cursor-pointer text-[#000] bg-white rounded-full p-1 border shadow-md"
         onClick={() => {
           setSiderBarView(!siderBarView);
         }}

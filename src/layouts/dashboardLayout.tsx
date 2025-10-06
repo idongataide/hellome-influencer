@@ -6,12 +6,14 @@ import SiderScreen from "../pages/dashboard/common/sideBar";
 import Images from "../components/images";
 import { useUser } from "@/hooks/useAdmin";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
+import { MenuOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
 const DashboardLayout: React.FC = () => {
-  const { siderBarView } = useOnboardingStore(); 
+  const { siderBarView, setSiderBarView } = useOnboardingStore(); 
   const [searchValue, setSearchValue] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu visibility
   // const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
   const datas = useOnboardingStore();
   const { data: user } = useUser();
@@ -25,16 +27,17 @@ const DashboardLayout: React.FC = () => {
     console.log('Searching for:', value);
   };
 
-  // const toggleMobileSearch = () => {
-  //   setIsMobileSearchVisible(!isMobileSearchVisible);
-  // };
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setSiderBarView(!siderBarView); // Also toggle the sidebar view
+  };
 
 
 
  return (
     <main className="overflow-hidden bg-black">
       <div className="flex w-full h-screen bg-white">
-        <div style={{ width: siderBarView ? '300px' : '80px', transition: 'width 0.3s ease' }}>
+        <div style={{ width: siderBarView ? '300px' : '80px', transition: 'width 0.3s ease' }} className="hidden md:block">
           <SiderScreen />
         </div>
 
@@ -62,7 +65,10 @@ const DashboardLayout: React.FC = () => {
                           />
                         </div>
                      
-
+                        <MenuOutlined
+                          className="text-2xl cursor-pointer md:hidden"
+                          onClick={toggleMobileMenu}
+                        />
                       </div>
                      </div>
                      <div className="col-lg-6 flex justify-end">
@@ -89,7 +95,25 @@ const DashboardLayout: React.FC = () => {
             </section>
           </div>
         </div>
-      </div>
+
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-opacity-50 z-40 md:hidden"
+            onClick={toggleMobileMenu}
+          ></div>
+        )}
+
+        <div
+          style={{
+            width: isMobileMenuOpen ? '300px' : '0px',
+            transition: 'width 0.3s ease-in-out',
+            overflowX: 'hidden',
+          }}
+          className="fixed top-0 left-0 h-full bg-[#031730] z-50 md:hidden"
+        >
+          <SiderScreen />
+        </div>
+        </div>
     
     </main>
   );
