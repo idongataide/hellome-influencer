@@ -13,7 +13,6 @@ const RefCodeCard: React.FC<RefCodeCardProps> = ({ user }) => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralCode);
-    // You can add a toast notification here
   };
 
   const handleSocialMediaClick = (url: string) => {

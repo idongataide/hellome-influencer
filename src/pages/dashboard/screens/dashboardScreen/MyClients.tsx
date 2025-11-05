@@ -16,7 +16,7 @@ interface ClientData {
 }
 
 const MyClients: React.FC = () => {
-  const { data: referrals, isLoading } = useReferrals(1); // 👈 assume hook exposes isLoading
+  const { data: referrals, isLoading } = useReferrals(1); 
   const rows = referrals?.data || [];
 
   const computeInitials = (fullName: string) => {

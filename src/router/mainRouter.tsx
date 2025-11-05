@@ -8,7 +8,6 @@ const MainRouter: React.FC = () => {
   const token = true;
 
   useEffect(() => {
-    // Add any initialization logic 
   }, []);
 
   if (token) {

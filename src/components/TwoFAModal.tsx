@@ -4,7 +4,7 @@ import { FaCopy } from 'react-icons/fa';
 
 export interface TwoFAModalProps {
     visible: boolean;
-    onVerify?: (code?: string) => void; // Rename to onVerify for clarity
+    onVerify?: (code?: string) => void; 
     onClose: () => void; 
     onSetupComplete?: () => void; 
     qrCodeSvg: string | null;
@@ -25,7 +25,7 @@ const TwoFAModal: React.FC<TwoFAModalProps> = ({
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Reset state when modal closes
+    // This Reset state when modal closes
     React.useEffect(() => {
         if (!visible) {
             setShowVerify(mode === 'verify');

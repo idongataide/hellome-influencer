@@ -13,7 +13,7 @@ const CurrencyConverterCard = ({}) => {
   
   // State for form values
   const [amount, setAmount] = useState<number>(500);
-  const [fromCurrency, setFromCurrency] = useState<string>("EUR"); // Default value
+  const [fromCurrency, setFromCurrency] = useState<string>("EUR"); 
   const toCurrency = user?.wallet?.currency || "GBP";
   const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -176,7 +176,7 @@ useEffect(() => {
             {errorMessage}
           </p>
         )}
-        {/* Button */}
+
         <Button 
           className="w-full bg-[#036BDD]! border-none! text-white! min-h-[48px]! py-3 rounded-xl font-semibold! mt-5 hover:bg-[#0259B8] transition disabled:opacity-50"
           disabled={isLoading || amount <= 0}

@@ -9,7 +9,7 @@ import { useUser } from "@/hooks/useAdmin";
 import CurrencyConverterCard from "../converter/converter";
 
 const DashboadScreen: React.FC = () => {
-  const { data: user, isLoading } = useUser(); // assuming useUser exposes isLoading
+  const { data: user, isLoading } = useUser(); 
 
   const totalReferrals = user?.profile?.overview?.total_referrals || 0;
   type Wallet = {
@@ -35,12 +35,9 @@ const DashboadScreen: React.FC = () => {
 
   return (
     <div className="w-full space-y-6">
-      {/* Top Section: Metric Cards + My Clients + Ref Code */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Side - Metrics */}
         <div className="lg:col-span-7 space-y-6 ">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* My Clients Card */}
             <div className="bg-[#031730] min-h-[140px] rounded-2xl p-6 text-[#F9FAFB]">
               <div className="flex items-center justify-between">
                 <div>
@@ -51,7 +48,6 @@ const DashboadScreen: React.FC = () => {
               </div>
             </div>
 
-            {/* Wallet Slider with Lazy Loader */}
             <div className="wallet-slider">
               {isLoading ? (
                 <div className="flex items-center justify-center min-h-[140px] bg-gray-100 rounded-2xl">
@@ -97,7 +93,6 @@ const DashboadScreen: React.FC = () => {
           <RefCodeCard user={user} />
         </div>
 
-        {/* Right Side */}
         <div className="lg:col-span-5 space-y-6">
           <CurrencyConverterCard />
         </div>
